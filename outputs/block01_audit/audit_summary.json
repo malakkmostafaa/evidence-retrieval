@@ -1,0 +1,461 @@
+{
+  "block": "01_audit",
+  "created": "2026-10-18T07:06:30",
+  "runtime_s": 757.3,
+  "inputs": {
+    "zip_dir": "C:\\Users\\malak\\Desktop\\ks\\ks_upload",
+    "zips": [
+      {
+        "name": "dev_knowledge_store_part01.zip",
+        "bytes": 877983624,
+        "sha256": "e25119ec05612fc6d9fb93523a9fe27abc65171d0aa89cb86284713f165ee81b"
+      },
+      {
+        "name": "dev_knowledge_store_part02.zip",
+        "bytes": 846131192,
+        "sha256": "7631f87c4c5c721554be8fec44cd820de4affb0260b41731ef357075bf8cd2e8"
+      },
+      {
+        "name": "dev_knowledge_store_part03.zip",
+        "bytes": 906503463,
+        "sha256": "81204a855f7d56ce4d001e4248c8c85c9f5c18b03ed75ff9463972c68da0a5e8"
+      },
+      {
+        "name": "dev_knowledge_store_part04.zip",
+        "bytes": 978936442,
+        "sha256": "db8bbe81d65026502b7ad8a7a2fe6009e61d03f3d17031cc05e2c02e49549ddc"
+      },
+      {
+        "name": "dev_knowledge_store_part05.zip",
+        "bytes": 906603063,
+        "sha256": "d5413967419b68a0fc9cd06b8e3cd78a46989ae279d3e65d52053f1ab2cba740"
+      },
+      {
+        "name": "dev_knowledge_store_part06.zip",
+        "bytes": 958496753,
+        "sha256": "50d7bd2ee588d7ee64dd4dddb4bffd3d75dadd3bf494234d682c725662695062"
+      },
+      {
+        "name": "dev_knowledge_store_part07.zip",
+        "bytes": 890353604,
+        "sha256": "f60d6ff3c4972e9eb7fea3c5efa61f08189b241c8127ee358b6a7d97b15dee87"
+      },
+      {
+        "name": "dev_knowledge_store_part08.zip",
+        "bytes": 496932766,
+        "sha256": "0e4c29b1e5a5ddbb46d701d9c6b359e78345aa9f4a5db5c35da2699354b17689"
+      }
+    ],
+    "subsets_file": "C:\\Users\\malak\\Desktop\\ks\\dev_subsets_seed42.json",
+    "subsets_sha256": "c08c603894f363918d6d68e5cda6b435308387617ab30319bcb8f963685c1644",
+    "dev_file": "C:\\Users\\malak\\Desktop\\thesis\\data\\raw\\averitec\\dev.json",
+    "dev_sha256": "499793726b4a5406780928a3d9dedc48d6dd53de778f22437d129cacdb08e300"
+  },
+  "environment": {
+    "python": "3.11.9",
+    "os": "Windows 10",
+    "git_commit": "58bc887bdb08e64d4dc8af910b303cdd402eca4f"
+  },
+  "inventory": {
+    "n_zips": 8,
+    "n_stores": 300,
+    "store_layouts": {
+      "jsonl": 300
+    },
+    "duplicate_store_members": 0,
+    "claim_id_min": 0,
+    "claim_id_max": 499,
+    "uncompressed_bytes": 21660158438
+  },
+  "subsets": {
+    "dev300": {
+      "n_ids": 300,
+      "with_store": 300,
+      "without_store": [],
+      "out_of_dev_range": []
+    },
+    "dev50_debug": {
+      "n_ids": 50,
+      "with_store": 50,
+      "without_store": [],
+      "out_of_dev_range": []
+    },
+    "_relations": [
+      "dev50_debug is a subset of dev300"
+    ],
+    "_stores_not_in_any_subset": [],
+    "_n_stores_not_in_any_subset": 0
+  },
+  "reading": {
+    "lines": 301754,
+    "blank_lines": 0,
+    "bad_lines": 0,
+    "records": 301754,
+    "failures_by_kind": {},
+    "accounting_ok": true
+  },
+  "schema": {
+    "url2text_is_list": 301754,
+    "url2text_items_total": 225998727,
+    "url2text_items_with_newline": 0,
+    "url2text_items_ending_sentence": 47285532
+  },
+  "text": {
+    "total_chars": 20633927345,
+    "empty_records": 64512,
+    "empty_share": 0.2138,
+    "tiny_records_under_200": 5482,
+    "pdf_records": 50712,
+    "web_records": 251042,
+    "chars_percentiles_all": {
+      "p50": 4412,
+      "p90": 104579,
+      "p95": 349217,
+      "p99": 1166670,
+      "mean": 68380.0,
+      "max": 38503280
+    },
+    "chars_percentiles_nonempty": {
+      "p50": 6789,
+      "p90": 163747,
+      "p95": 465590,
+      "p99": 1349849,
+      "mean": 86973.4,
+      "max": 38503280
+    },
+    "chars_percentiles_web": {
+      "p50": 3574,
+      "p90": 29901,
+      "p95": 63390,
+      "p99": 376089,
+      "mean": 23385.9,
+      "max": 17395998
+    },
+    "chars_percentiles_pdf": {
+      "p50": 76228,
+      "p90": 770556,
+      "p95": 1127235,
+      "p99": 2554736,
+      "mean": 291116.4,
+      "max": 38503280
+    },
+    "words_percentiles_all": {
+      "p50": 692,
+      "p90": 15892,
+      "p95": 52453,
+      "p99": 181242,
+      "mean": 10267.9,
+      "max": 6234314
+    },
+    "chars_histogram": {
+      "[0, 1)": 64510,
+      "[1, 200)": 5483,
+      "[200, 1,000)": 20954,
+      "[1,000, 5,000)": 69153,
+      "[5,000, 10,000)": 45489,
+      "[10,000, 50,000)": 51855,
+      "[50,000, 100,000)": 13351,
+      "[100,000, 200,000)": 9590,
+      "[200,000, 500,000)": 10403,
+      "[500,000, 1,000,000)": 6996,
+      ">= 1,000,000": 3970
+    },
+    "records_with_u2028": 444,
+    "records_with_nul": 472
+  },
+  "old_cap_impact": {
+    "cap_chars": 100000,
+    "records_over_cap": 30957,
+    "records_over_cap_share": 0.1026,
+    "pdf_records_over_cap": 22998,
+    "chars_beyond_cap": 14883094114,
+    "chars_beyond_cap_share_of_all": 0.7213,
+    "note": "counted on raw records before deduplication"
+  },
+  "query_types": {
+    "counts": {
+      "question_duplicate": 47705,
+      "gpt_url_only": 35137,
+      "gpt_question": 31900,
+      "background_questions": 29093,
+      "most_similar": 28887,
+      "same_entity_questions": 25524,
+      "provenance": 22752,
+      "NER": 20268,
+      "background": 18747,
+      "question": 16964,
+      "answer": 15717,
+      "claim+question": 6932,
+      "claim": 1488,
+      "gold": 640
+    },
+    "samples": {
+      "gold": [
+        "_",
+        "_",
+        "_",
+        "_",
+        "_"
+      ],
+      "question": [
+        "Where was the claim first published",
+        "Where was the claim first published",
+        "Where was the claim first published",
+        "Where was the claim first published",
+        "Where was the claim first published"
+      ],
+      "question_duplicate": [
+        "Sean Connery refusal letter Steve Jobs apple commercial",
+        "Sean Connery refusal letter Steve Jobs apple commercial",
+        "Sean Connery refusal letter Steve Jobs apple commercial",
+        "Sean Connery refusal letter Steve Jobs apple commercial",
+        "Sean Connery refusal letter Steve Jobs apple commercial"
+      ],
+      "claim+question": [
+        "In a letter to Steve Jobs, Sean Connery refused to appear in an apple commercial. Where was the claim first published",
+        "In a letter to Steve Jobs, Sean Connery refused to appear in an apple commercial. Where was the claim first published",
+        "In a letter to Steve Jobs, Sean Connery refused to appear in an apple commercial. Where was the claim first published",
+        "In a letter to Steve Jobs, Sean Connery refused to appear in an apple commercial. Where was the claim first published",
+        "In a letter to Steve Jobs, Sean Connery refused to appear in an apple commercial. Where was the claim first published"
+      ],
+      "answer": [
+        "Scoopertino is an imaginary news organization devoted to ferreting out the most relevant stories in the world of Apple, whether or not they actually occurred - says their about page",
+        "Scoopertino is an imaginary news organization devoted to ferreting out the most relevant stories in the world of Apple, whether or not they actually occurred - says their about page",
+        "A Washington Post story wrongly claimed the Trump administration accused Billie Eilish of “destroying our country",
+        "A Washington Post story wrongly claimed the Trump administration accused Billie Eilish of “destroying our country",
+        "A Washington Post story wrongly claimed the Trump administration accused Billie Eilish of “destroying our country"
+      ],
+      "claim": [
+        "In a letter to Steve Jobs, Sean Connery refused to appear in an apple commercial.",
+        "In a letter to Steve Jobs, Sean Connery refused to appear in an apple commercial.",
+        "In a letter to Steve Jobs, Sean Connery refused to appear in an apple commercial.",
+        "In a letter to Steve Jobs, Sean Connery refused to appear in an apple commercial.",
+        "Trump Administration claimed songwriter Billie Eilish Is Destroying Our Country In Leaked Documents"
+      ],
+      "gpt_question": [
+        "Did Sean Connery write a letter to Steve Jobs?",
+        "Did Sean Connery write a letter to Steve Jobs?",
+        "Did Sean Connery write a letter to Steve Jobs?",
+        "Did Sean Connery write a letter to Steve Jobs?",
+        "Did Sean Connery write a letter to Steve Jobs?"
+      ],
+      "background": [
+        "Sean Connery's stance on endorsements and commercials: This background detail is directly related to Sean Connery's decision to refuse the Apple commercial. It will help us understand his motivations ",
+        "Sean Connery's stance on endorsements and commercials: This background detail is directly related to Sean Connery's decision to refuse the Apple commercial. It will help us understand his motivations ",
+        "Sean Connery's stance on endorsements and commercials: This background detail is directly related to Sean Connery's decision to refuse the Apple commercial. It will help us understand his motivations ",
+        "Sean Connery's stance on endorsements and commercials: This background detail is directly related to Sean Connery's decision to refuse the Apple commercial. It will help us understand his motivations ",
+        "Sean Connery's stance on endorsements and commercials: This background detail is directly related to Sean Connery's decision to refuse the Apple commercial. It will help us understand his motivations "
+      ],
+      "background_questions": [
+        "Sean Connery's stance on endorsements and commercials",
+        "Sean Connery's stance on endorsements and commercials",
+        "Sean Connery's stance on endorsements and commercials",
+        "Sean Connery's stance on endorsements and commercials",
+        "Sean Connery's stance on endorsements and commercials"
+      ],
+      "provenance": [
+        "Analysis of Facebook as a news platform",
+        "Analysis of Facebook as a news platform",
+        "Analysis of Facebook as a news platform",
+        "Analysis of Facebook as a news platform",
+        "Analysis of Facebook as a news platform"
+      ],
+      "NER": [
+        "Steve Jobs (person)",
+        "Steve Jobs (person)",
+        "Steve Jobs (person)",
+        "Steve Jobs (person)",
+        "Steve Jobs (person)"
+      ],
+      "most_similar": [
+        "Woods spins the tale, it was just weeks before iMac’s first Christmas in 1998 when slowing holiday sales rang the alarm in the CEO’s office",
+        "Woods spins the tale, it was just weeks before iMac’s first Christmas in 1998 when slowing holiday sales rang the alarm in the CEO’s office",
+        "Woods spins the tale, it was just weeks before iMac’s first Christmas in 1998 when slowing holiday sales rang the alarm in the CEO’s office",
+        "Woods spins the tale, it was just weeks before iMac’s first Christmas in 1998 when slowing holiday sales rang the alarm in the CEO’s office",
+        "Woods spins the tale, it was just weeks before iMac’s first Christmas in 1998 when slowing holiday sales rang the alarm in the CEO’s office"
+      ],
+      "gpt_url_only": [
+        "imac disaster scoopertino",
+        "imac disaster scoopertino",
+        "imac disaster scoopertino",
+        "imac disaster scoopertino",
+        "imac disaster scoopertino"
+      ],
+      "same_entity_questions": [
+        "Did Sean Connery receive an invitation from Steve Jobs?",
+        "Did Sean Connery receive an invitation from Steve Jobs?",
+        "Did Sean Connery receive an invitation from Steve Jobs?",
+        "Did Sean Connery receive an invitation from Steve Jobs?",
+        "Did Sean Connery receive an invitation from Steve Jobs?"
+      ]
+    }
+  },
+  "duplicates": {
+    "exact_duplicate_records_(same_norm_url_and_text)": 86528,
+    "keys_shared_by_more_than_one_store": 32336,
+    "unique_(url,text)_keys": 215226,
+    "unique_norm_urls": 213557,
+    "urls_with_more_than_one_text_version": 1424,
+    "nonempty_texts_under_more_than_one_url": 1072
+  },
+  "domains": {
+    "n_hosts": 44320,
+    "top_30_hosts": [
+      [
+        "ncbi.nlm.nih.gov",
+        5269
+      ],
+      [
+        "nytimes.com",
+        3182
+      ],
+      [
+        "cnn.com",
+        2800
+      ],
+      [
+        "quora.com",
+        2561
+      ],
+      [
+        "en.wikipedia.org",
+        2521
+      ],
+      [
+        "cdc.gov",
+        2480
+      ],
+      [
+        "nbcnews.com",
+        2138
+      ],
+      [
+        "pubmed.ncbi.nlm.nih.gov",
+        2108
+      ],
+      [
+        "bbc.com",
+        2052
+      ],
+      [
+        "cbsnews.com",
+        2039
+      ],
+      [
+        "reuters.com",
+        1946
+      ],
+      [
+        "justice.gov",
+        1897
+      ],
+      [
+        "theguardian.com",
+        1861
+      ],
+      [
+        "washingtonpost.com",
+        1732
+      ],
+      [
+        "pewresearch.org",
+        1594
+      ],
+      [
+        "pbs.org",
+        1590
+      ],
+      [
+        "congress.gov",
+        1487
+      ],
+      [
+        "npr.org",
+        1434
+      ],
+      [
+        "jstor.org",
+        1367
+      ],
+      [
+        "govinfo.gov",
+        1365
+      ],
+      [
+        "abcnews.go.com",
+        1204
+      ],
+      [
+        "politico.com",
+        1196
+      ],
+      [
+        "linkedin.com",
+        1178
+      ],
+      [
+        "imf.org",
+        1111
+      ],
+      [
+        "time.com",
+        1098
+      ],
+      [
+        "who.int",
+        1067
+      ],
+      [
+        "twitter.com",
+        1041
+      ],
+      [
+        "sciencedirect.com",
+        1013
+      ],
+      [
+        "brookings.edu",
+        982
+      ],
+      [
+        "vox.com",
+        975
+      ]
+    ],
+    "factcheck_flagged_records": 5872,
+    "factcheck_list_note": "candidate host list + path regex; an ASSUMPTION for measurement"
+  },
+  "dates": {
+    "records_with_url_date": 44090,
+    "share": 0.1461
+  },
+  "gold": {
+    "dev_size": 500,
+    "gold_urls_by_state_own_store": {
+      "claims_with_store": 300,
+      "claims_without_gold_urls": 0,
+      "own_store_with_text": 376,
+      "own_store_empty_text": 262
+    },
+    "gold_urls_by_state_all_stores": {
+      "pooled_with_text": 379,
+      "pooled_empty_text": 259
+    },
+    "claims_all_gold_urls_with_text_in_own_store": 124,
+    "claims_no_gold_url_with_text_in_own_store": 69,
+    "leakage_urls": {
+      "fact_checking_article_given": 300,
+      "fact_checking_article_in_own_store": 0,
+      "fact_checking_article_in_any_store": 0,
+      "original_claim_url_given": 156,
+      "original_claim_url_in_own_store": 10,
+      "original_claim_url_in_any_store": 11
+    },
+    "label_counts_for_claims_with_store": {
+      "Refuted": 183,
+      "Supported": 73,
+      "Not Enough Evidence": 21,
+      "Conflicting Evidence/Cherrypicking": 23
+    }
+  }
+}

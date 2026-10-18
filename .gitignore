@@ -1,3 +1,7 @@
 .venv/
 data/
 *.parquet
+__pycache__/
+*.pyc
+outputs/**/*.csv.gz
+.pytest_cache/

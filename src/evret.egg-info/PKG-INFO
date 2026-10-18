@@ -1,0 +1,5 @@
+Metadata-Version: 2.4
+Name: evret
+Version: 0.1.0
+Summary: Evidence Retrieval and Evaluation module (bachelor thesis)
+Requires-Python: >=3.10
