@@ -1,0 +1,77 @@
+[
+  {
+    "check": "python",
+    "status": "PASS",
+    "detail": "3.11.9 at C:\\Users\\malak\\Desktop\\Bachelor Thesis\\evidence-retrieval\\.venv\\Scripts\\python.exe"
+  },
+  {
+    "check": "os",
+    "status": "PASS",
+    "detail": "Windows 10 (AMD64)"
+  },
+  {
+    "check": "isolated environment",
+    "status": "PASS",
+    "detail": "venv/conda active"
+  },
+  {
+    "check": "default file encoding",
+    "status": "WARN",
+    "detail": "utf8_mode=0; always pass encoding='utf-8' when opening files (or set PYTHONUTF8=1)"
+  },
+  {
+    "check": "utf-8 round trip",
+    "status": "PASS",
+    "detail": "text with Arabic/emoji/U+2028 survives write+read"
+  },
+  {
+    "check": "RAM",
+    "status": "PASS",
+    "detail": "total 16.5 GB, available now 4.3 GB"
+  },
+  {
+    "check": "disk free",
+    "status": "PASS",
+    "detail": "57.7 GB free on the drive of C:\\Users\\malak\\Desktop\\ks\\ks_upload"
+  },
+  {
+    "check": "data dir",
+    "status": "PASS",
+    "detail": "8 zip files, 6.86 GB: ['dev_knowledge_store_part01.zip', 'dev_knowledge_store_part02.zip', 'dev_knowledge_store_part03.zip', 'dev_knowledge_store_part04.zip', 'dev_knowledge_store_part05.zip', 'dev_knowledge_store_part06.zip', 'dev_knowledge_store_part07.zip', 'dev_knowledge_store_part08.zip']"
+  },
+  {
+    "check": "torch",
+    "status": "PASS",
+    "detail": "2.14.1+cu132 (built for CUDA 13.2)"
+  },
+  {
+    "check": "gpu",
+    "status": "PASS",
+    "detail": "NVIDIA GeForce RTX 3060 Laptop GPU, 6.4 GB VRAM"
+  },
+  {
+    "check": "gpu matmul agrees with cpu",
+    "status": "PASS",
+    "detail": "relative difference 2.75e-07"
+  },
+  {
+    "check": "embedding semantics",
+    "status": "PASS",
+    "detail": "cos(paraphrase)=0.910 > cos(unrelated)=0.345"
+  },
+  {
+    "check": "embedding gpu == cpu",
+    "status": "PASS",
+    "detail": "min cosine(cpu, gpu) = 1.000000"
+  },
+  {
+    "check": "embedding throughput (rough)",
+    "status": "PASS",
+    "detail": "205 passages/s at ~150 words, peak VRAM 0.32 GB (first-run warm-up included)"
+  },
+  {
+    "check": "embedding total time",
+    "status": "PASS",
+    "detail": "37.4 s incl. model download"
+  }
+]
