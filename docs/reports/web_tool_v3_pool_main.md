@@ -24,7 +24,7 @@ Reading: of the 28 returned gold entries, 10 were removed as fact-check domains 
 | removed: own article | 53 (3%) |
 | removed: date unknown | 38 (2%) |
 | lost: robots.txt | 346 (20%) |
-| lost: HTTP 403 / 429 / other fetch failures | 241 / 9 / 17 |
+| lost: HTTP 403 / 429 / other fetch failures | 241 / 9 / 18 (405 x2, 406 x4, 202, 203, 307 x2, timeout x5, too large x2, protocol error) |
 | tiny or no text | 36 |
 | **kept** | **416 (24%)** |
 
