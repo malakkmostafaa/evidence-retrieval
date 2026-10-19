@@ -14,3 +14,8 @@
 - Tried: extraction (trafilatura, pypdf, htmldate, URL date), date filter, own-article and fact-check URL filters; fixtures: pages dated before / after / unknown, a PDF built byte by byte, wrapped own-article URL.
 - Happened: 11 tests pass; 14/14 injected bugs caught after two test fixes. Failed attempts: (1) htmldate given the URL returned the URL's date labelled "htmldate" (test found it; URL no longer passed); (2) my fact-check test for a wrapped URL was too weak because the path alone matched the regex, so a mutation survived - changed to a URL where only the unwrapped host reveals the fact-checker; (3) comment-stripping was untested - added a fixture.
 - Next: WS4 chunking + first-pass selection + Hit schema + equivalence test.
+
+## 2026-10-19 (WS4)
+- Tried: WebHit (subclass of the corpus Hit), pool statistics (N, avgdl, df from term offsets), BM25 and RRF for web passages, per-page chunk/vector cache, equivalence test against the corpus Hybrid.
+- Happened: 8 tests pass; 14/14 injected bugs caught (3 initially survived: df=0 term, query-vs-passage encoder, RRF depth - tests added). CPU embedding speed measured: 16.5 chunks/s. Failed attempt: my first new test used frozen stats without the query term and raised the intended KeyError (correct behaviour, test fixed).
+- Next: WS5 - assemble search_web, evaluation layer, run 10 held-out + 5 pooled claims, write docs/reports/web_tool_v1.md.
