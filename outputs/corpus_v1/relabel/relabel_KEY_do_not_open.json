@@ -1,0 +1,484 @@
+[
+ {
+  "row": 0,
+  "claim_id": 411,
+  "chunk_id": 5886694,
+  "first_arm": "hybrid",
+  "arms_and_ranks": {
+   "dense": 2,
+   "hybrid": 1
+  }
+ },
+ {
+  "row": 1,
+  "claim_id": 443,
+  "chunk_id": 115336,
+  "first_arm": "dense",
+  "arms_and_ranks": {
+   "dense": 2,
+   "hybrid": 1
+  }
+ },
+ {
+  "row": 2,
+  "claim_id": 4,
+  "chunk_id": 2780983,
+  "first_arm": "dense",
+  "arms_and_ranks": {
+   "dense": 5
+  }
+ },
+ {
+  "row": 3,
+  "claim_id": 450,
+  "chunk_id": 3386530,
+  "first_arm": "dense",
+  "arms_and_ranks": {
+   "dense": 5
+  }
+ },
+ {
+  "row": 4,
+  "claim_id": 92,
+  "chunk_id": 2563310,
+  "first_arm": "bm25",
+  "arms_and_ranks": {
+   "bm25": 4
+  }
+ },
+ {
+  "row": 5,
+  "claim_id": 285,
+  "chunk_id": 1001744,
+  "first_arm": "hybrid",
+  "arms_and_ranks": {
+   "bm25": 3,
+   "hybrid": 2
+  }
+ },
+ {
+  "row": 6,
+  "claim_id": 450,
+  "chunk_id": 3386675,
+  "first_arm": "bm25",
+  "arms_and_ranks": {
+   "bm25": 4
+  }
+ },
+ {
+  "row": 7,
+  "claim_id": 406,
+  "chunk_id": 5402683,
+  "first_arm": "hybrid",
+  "arms_and_ranks": {
+   "dense": 1,
+   "bm25": 2,
+   "hybrid": 1
+  }
+ },
+ {
+  "row": 8,
+  "claim_id": 448,
+  "chunk_id": 4570146,
+  "first_arm": "dense",
+  "arms_and_ranks": {
+   "dense": 4
+  }
+ },
+ {
+  "row": 9,
+  "claim_id": 200,
+  "chunk_id": 4941545,
+  "first_arm": "bm25",
+  "arms_and_ranks": {
+   "bm25": 3
+  }
+ },
+ {
+  "row": 10,
+  "claim_id": 360,
+  "chunk_id": 643955,
+  "first_arm": "dense",
+  "arms_and_ranks": {
+   "dense": 2
+  }
+ },
+ {
+  "row": 11,
+  "claim_id": 390,
+  "chunk_id": 3408945,
+  "first_arm": "dense",
+  "arms_and_ranks": {
+   "dense": 1
+  }
+ },
+ {
+  "row": 12,
+  "claim_id": 283,
+  "chunk_id": 6094610,
+  "first_arm": "hybrid",
+  "arms_and_ranks": {
+   "dense": 2,
+   "bm25": 1,
+   "hybrid": 1
+  }
+ },
+ {
+  "row": 13,
+  "claim_id": 203,
+  "chunk_id": 3721882,
+  "first_arm": "hybrid",
+  "arms_and_ranks": {
+   "dense": 4,
+   "hybrid": 2
+  }
+ },
+ {
+  "row": 14,
+  "claim_id": 330,
+  "chunk_id": 896004,
+  "first_arm": "hybrid",
+  "arms_and_ranks": {
+   "hybrid": 3
+  }
+ },
+ {
+  "row": 15,
+  "claim_id": 332,
+  "chunk_id": 5954422,
+  "first_arm": "hybrid",
+  "arms_and_ranks": {
+   "bm25": 4,
+   "hybrid": 2
+  }
+ },
+ {
+  "row": 16,
+  "claim_id": 243,
+  "chunk_id": 3048062,
+  "first_arm": "dense",
+  "arms_and_ranks": {
+   "dense": 5
+  }
+ },
+ {
+  "row": 17,
+  "claim_id": 430,
+  "chunk_id": 4325314,
+  "first_arm": "bm25",
+  "arms_and_ranks": {
+   "bm25": 3
+  }
+ },
+ {
+  "row": 18,
+  "claim_id": 131,
+  "chunk_id": 1945307,
+  "first_arm": "bm25",
+  "arms_and_ranks": {
+   "bm25": 3
+  }
+ },
+ {
+  "row": 19,
+  "claim_id": 137,
+  "chunk_id": 212381,
+  "first_arm": "bm25",
+  "arms_and_ranks": {
+   "bm25": 4
+  }
+ },
+ {
+  "row": 20,
+  "claim_id": 183,
+  "chunk_id": 2469978,
+  "first_arm": "hybrid",
+  "arms_and_ranks": {
+   "bm25": 1,
+   "hybrid": 1
+  }
+ },
+ {
+  "row": 21,
+  "claim_id": 36,
+  "chunk_id": 3504045,
+  "first_arm": "bm25",
+  "arms_and_ranks": {
+   "bm25": 2
+  }
+ },
+ {
+  "row": 22,
+  "claim_id": 493,
+  "chunk_id": 2828473,
+  "first_arm": "dense",
+  "arms_and_ranks": {
+   "dense": 2,
+   "hybrid": 5
+  }
+ },
+ {
+  "row": 23,
+  "claim_id": 212,
+  "chunk_id": 1888455,
+  "first_arm": "bm25",
+  "arms_and_ranks": {
+   "bm25": 4,
+   "hybrid": 5
+  }
+ },
+ {
+  "row": 24,
+  "claim_id": 120,
+  "chunk_id": 341534,
+  "first_arm": "hybrid",
+  "arms_and_ranks": {
+   "dense": 5,
+   "hybrid": 4
+  }
+ },
+ {
+  "row": 25,
+  "claim_id": 144,
+  "chunk_id": 2926233,
+  "first_arm": "bm25",
+  "arms_and_ranks": {
+   "dense": 4,
+   "bm25": 5,
+   "hybrid": 1
+  }
+ },
+ {
+  "row": 26,
+  "claim_id": 390,
+  "chunk_id": 3411058,
+  "first_arm": "dense",
+  "arms_and_ranks": {
+   "dense": 3,
+   "hybrid": 5
+  }
+ },
+ {
+  "row": 27,
+  "claim_id": 105,
+  "chunk_id": 1722418,
+  "first_arm": "hybrid",
+  "arms_and_ranks": {
+   "dense": 1,
+   "hybrid": 4
+  }
+ },
+ {
+  "row": 28,
+  "claim_id": 212,
+  "chunk_id": 1888474,
+  "first_arm": "dense",
+  "arms_and_ranks": {
+   "dense": 4,
+   "bm25": 5,
+   "hybrid": 4
+  }
+ },
+ {
+  "row": 29,
+  "claim_id": 488,
+  "chunk_id": 2102013,
+  "first_arm": "bm25",
+  "arms_and_ranks": {
+   "bm25": 3
+  }
+ },
+ {
+  "row": 30,
+  "claim_id": 455,
+  "chunk_id": 1279491,
+  "first_arm": "dense",
+  "arms_and_ranks": {
+   "dense": 4,
+   "hybrid": 1
+  }
+ },
+ {
+  "row": 31,
+  "claim_id": 18,
+  "chunk_id": 6320610,
+  "first_arm": "bm25",
+  "arms_and_ranks": {
+   "bm25": 3,
+   "hybrid": 4
+  }
+ },
+ {
+  "row": 32,
+  "claim_id": 105,
+  "chunk_id": 1724915,
+  "first_arm": "hybrid",
+  "arms_and_ranks": {
+   "dense": 2,
+   "hybrid": 3
+  }
+ },
+ {
+  "row": 33,
+  "claim_id": 284,
+  "chunk_id": 2597932,
+  "first_arm": "hybrid",
+  "arms_and_ranks": {
+   "dense": 3,
+   "hybrid": 2
+  }
+ },
+ {
+  "row": 34,
+  "claim_id": 419,
+  "chunk_id": 1903742,
+  "first_arm": "hybrid",
+  "arms_and_ranks": {
+   "hybrid": 1
+  }
+ },
+ {
+  "row": 35,
+  "claim_id": 88,
+  "chunk_id": 2313189,
+  "first_arm": "hybrid",
+  "arms_and_ranks": {
+   "bm25": 1,
+   "hybrid": 3
+  }
+ },
+ {
+  "row": 36,
+  "claim_id": 24,
+  "chunk_id": 4435706,
+  "first_arm": "dense",
+  "arms_and_ranks": {
+   "dense": 2,
+   "bm25": 3,
+   "hybrid": 2
+  }
+ },
+ {
+  "row": 37,
+  "claim_id": 28,
+  "chunk_id": 569846,
+  "first_arm": "bm25",
+  "arms_and_ranks": {
+   "bm25": 4
+  }
+ },
+ {
+  "row": 38,
+  "claim_id": 7,
+  "chunk_id": 5860502,
+  "first_arm": "hybrid",
+  "arms_and_ranks": {
+   "dense": 4,
+   "hybrid": 3
+  }
+ },
+ {
+  "row": 39,
+  "claim_id": 90,
+  "chunk_id": 3224344,
+  "first_arm": "bm25",
+  "arms_and_ranks": {
+   "dense": 2,
+   "bm25": 4,
+   "hybrid": 2
+  }
+ },
+ {
+  "row": 40,
+  "claim_id": 64,
+  "chunk_id": 403283,
+  "first_arm": "bm25",
+  "arms_and_ranks": {
+   "bm25": 4,
+   "hybrid": 2
+  }
+ },
+ {
+  "row": 41,
+  "claim_id": 137,
+  "chunk_id": 3766234,
+  "first_arm": "bm25",
+  "arms_and_ranks": {
+   "bm25": 5
+  }
+ },
+ {
+  "row": 42,
+  "claim_id": 317,
+  "chunk_id": 2322830,
+  "first_arm": "dense",
+  "arms_and_ranks": {
+   "dense": 3
+  }
+ },
+ {
+  "row": 43,
+  "claim_id": 442,
+  "chunk_id": 3096122,
+  "first_arm": "hybrid",
+  "arms_and_ranks": {
+   "hybrid": 4
+  }
+ },
+ {
+  "row": 44,
+  "claim_id": 145,
+  "chunk_id": 563247,
+  "first_arm": "dense",
+  "arms_and_ranks": {
+   "dense": 4
+  }
+ },
+ {
+  "row": 45,
+  "claim_id": 237,
+  "chunk_id": 3862381,
+  "first_arm": "dense",
+  "arms_and_ranks": {
+   "dense": 3,
+   "bm25": 3,
+   "hybrid": 2
+  }
+ },
+ {
+  "row": 46,
+  "claim_id": 131,
+  "chunk_id": 2032117,
+  "first_arm": "dense",
+  "arms_and_ranks": {
+   "dense": 5
+  }
+ },
+ {
+  "row": 47,
+  "claim_id": 65,
+  "chunk_id": 1465592,
+  "first_arm": "bm25",
+  "arms_and_ranks": {
+   "bm25": 3
+  }
+ },
+ {
+  "row": 48,
+  "claim_id": 403,
+  "chunk_id": 3580592,
+  "first_arm": "bm25",
+  "arms_and_ranks": {
+   "bm25": 5
+  }
+ },
+ {
+  "row": 49,
+  "claim_id": 442,
+  "chunk_id": 3105274,
+  "first_arm": "dense",
+  "arms_and_ranks": {
+   "dense": 3
+  }
+ }
+]
