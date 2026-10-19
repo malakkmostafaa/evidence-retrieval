@@ -88,3 +88,10 @@ Format as DECISIONS.md. Merged into DECISIONS.md later. Evidence is marked estab
 ## WD4a: Fetcher details   [engineering]   2026-10-19
 - Decision: robots.txt per RFC 9309 (4xx = allowed; 5xx/unreachable = disallowed; robots not applied to web.archive.org snapshots); retries on timeout/transport error/429/5xx: 3 attempts, waits 1 s and 2 s; 404 etc. recorded, not retried; archive.org spaced >= 1 s between requests; per-request deadline 45 s; raw bytes stored zlib-compressed by sha256 (lets us re-run extraction without re-downloading). User-Agent: `evret-thesis-bot/0.1 (academic research, bachelor thesis; non-commercial; ...)`, WITHOUT a contact e-mail (none was authorised); add one via `Fetcher(user_agent=...)` if the supervisor wants it.
 - Limitation: robots is checked for the first URL only, not for each redirect hop.
+
+## WD2b: Date handling details   [methodology]   2026-10-19
+- Decision: (1) Wayback snapshot: pub_date = snapshot day = UPPER bound of the publication date, date_source "wayback", always counts as <= claim date; the htmldate value of the snapshot is stored separately (`html_date`) for manual review only. (2) htmldate is called on the page content only (`original_date=True`, no URL passed) because with a URL it silently reads the URL path and would be mislabelled "htmldate" (found by a test). (3) URL date second, "none" last. (4) Partial dates ("2020-03") are compared by their EARLIEST day, the same rule as the corpus `not_after` filter (D5) - consistent but permissive: a page dated "2020-03" passes for a claim on 2020-03-10. Counts of partial dates are reported in WS5. (5) The same day counts as before (<=). (6) If the claim has no date, nothing is removed by date.
+- Alternative for (4): latest possible day (stricter, fewer leaks, fewer pages). Not chosen yet; ask Malak if the WS5 numbers show it matters.
+
+## WD4b: Extraction details   [engineering]
+- trafilatura defaults with include_comments=False, include_tables=True; pypdf reads at most 300 pages (cut recorded in `note`); non-HTML/PDF types give empty text with a note.
