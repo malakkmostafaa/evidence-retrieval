@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "evret"
 version = "0.1.0"
 description = "Evidence Retrieval and Evaluation module (bachelor thesis)"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 
 [tool.setuptools.packages.find]
 where = ["src"]

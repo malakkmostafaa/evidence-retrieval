@@ -5,3 +5,4 @@ __pycache__/
 *.pyc
 outputs/**/*.csv.gz
 .pytest_cache/
+logs/

@@ -1,0 +1,97 @@
+{
+ "n_claims": 30,
+ "variants": {
+  "default (fact-check excluded)": {
+   "dense": {
+    "seconds_batch": 1.19,
+    "ms_per_query_batch": 39.8,
+    "SourceHit@10_reachable_claims": 0.2692,
+    "GoldRecall@10_reachable_claims": 0.1859,
+    "SourceHit@10_all_claims": 0.2333,
+    "SourceHit@50_reachable_claims": 0.5,
+    "GoldRecall@50_reachable_claims": 0.3397,
+    "SourceHit@50_all_claims": 0.4333
+   },
+   "bm25": {
+    "seconds_batch": 6.65,
+    "ms_per_query_batch": 221.7,
+    "SourceHit@10_reachable_claims": 0.0769,
+    "GoldRecall@10_reachable_claims": 0.0769,
+    "SourceHit@10_all_claims": 0.0667,
+    "SourceHit@50_reachable_claims": 0.4231,
+    "GoldRecall@50_reachable_claims": 0.2878,
+    "SourceHit@50_all_claims": 0.3667
+   },
+   "hybrid": {
+    "seconds_batch": 6.09,
+    "ms_per_query_batch": 203.0,
+    "SourceHit@10_reachable_claims": 0.2308,
+    "GoldRecall@10_reachable_claims": 0.1827,
+    "SourceHit@10_all_claims": 0.2,
+    "SourceHit@50_reachable_claims": 0.4615,
+    "GoldRecall@50_reachable_claims": 0.3167,
+    "SourceHit@50_all_claims": 0.4
+   }
+  },
+  "ablation (fact-check included)": {
+   "dense": {
+    "seconds_batch": 0.85,
+    "ms_per_query_batch": 28.4,
+    "SourceHit@10_reachable_claims": 0.2692,
+    "GoldRecall@10_reachable_claims": 0.1859,
+    "SourceHit@10_all_claims": 0.2333,
+    "SourceHit@50_reachable_claims": 0.5,
+    "GoldRecall@50_reachable_claims": 0.3397,
+    "SourceHit@50_all_claims": 0.4333
+   },
+   "bm25": {
+    "seconds_batch": 4.52,
+    "ms_per_query_batch": 150.6,
+    "SourceHit@10_reachable_claims": 0.0769,
+    "GoldRecall@10_reachable_claims": 0.0769,
+    "SourceHit@10_all_claims": 0.0667,
+    "SourceHit@50_reachable_claims": 0.4231,
+    "GoldRecall@50_reachable_claims": 0.2878,
+    "SourceHit@50_all_claims": 0.3667
+   },
+   "hybrid": {
+    "seconds_batch": 5.43,
+    "ms_per_query_batch": 181.1,
+    "SourceHit@10_reachable_claims": 0.1538,
+    "GoldRecall@10_reachable_claims": 0.125,
+    "SourceHit@10_all_claims": 0.1333,
+    "SourceHit@50_reachable_claims": 0.4231,
+    "GoldRecall@50_reachable_claims": 0.2821,
+    "SourceHit@50_all_claims": 0.3667
+   }
+  }
+ },
+ "gold": {
+  "gold_urls": 91,
+  "gold_urls_reachable": 64,
+  "claims_with_reachable_gold": 26,
+  "claims_without_gold_url": 0
+ },
+ "reachable_claims": 26,
+ "leakage_checks": {
+  "sealed_or_unknown_doc_returned": 0,
+  "own_article_returned": 0,
+  "hits_checked": 9000
+ },
+ "latency": {
+  "dense": {
+   "ms_per_query_single_median": 402.0
+  },
+  "bm25": {
+   "ms_per_query_single_median": 276.4
+  },
+  "hybrid": {
+   "ms_per_query_single_median": 585.6
+  }
+ },
+ "peak_ram_gb": 3.43,
+ "bands": [
+  0
+ ],
+ "n_chunks_searched": 1580741
+}

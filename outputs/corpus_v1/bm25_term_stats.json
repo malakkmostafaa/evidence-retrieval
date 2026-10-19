@@ -1,0 +1,16 @@
+{
+ "band0": {
+  "distinct_terms": 1736360,
+  "df_eq_1": 908627,
+  "share_df1": 0.5233,
+  "postings": 185923748,
+  "share_postings_from_df1": 0.00489
+ },
+ "pool": {
+  "distinct_terms": 5839281,
+  "df_eq_1": 3257792,
+  "share_df1": 0.5579,
+  "postings": 761572882,
+  "share_postings_from_df1": 0.00428
+ }
+}
