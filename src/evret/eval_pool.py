@@ -73,16 +73,57 @@ def reachable_flags(corpus, claim) -> list[bool]:
     return out
 
 
+def gold_state(corpus, variants, have) -> str:
+    """Why a gold URL is (not) reachable: reachable | factcheck_flag | empty_text | tiny_text | not_in_index."""
+    docs = [d for v in variants for d in corpus.url_to_docs.get(v, ())]
+    if not docs:
+        return "not_in_index"
+    if any(d in have and not corpus.docs["is_factcheck"][d] for d in docs):
+        return "reachable"
+    if any(d in have for d in docs):
+        return "factcheck_flag"
+    if any(not corpus.docs["is_empty"][d] and corpus.docs["is_tiny"][d] for d in docs):
+        return "tiny_text"
+    return "empty_text"
+
+
+def bootstrap(per_claim: dict, names: list[str], n_boot: int = 10000, seed: int = 7) -> dict:
+    """per_claim[name] = array over claims (same order). Percentile 95% CI of the mean by resampling CLAIMS, and CI of
+    the paired mean difference for every pair (same resampled claims for all methods)."""
+    rng = np.random.default_rng(seed)
+    n = len(per_claim[names[0]])
+    idx = rng.integers(0, n, size=(n_boot, n))
+    out = {"mean": {}, "ci95": {}, "paired_diff": {}}
+    for nm in names:
+        a = np.asarray(per_claim[nm], dtype=float)
+        bs = a[idx].mean(1)
+        out["mean"][nm] = round(float(a.mean()), 4)
+        out["ci95"][nm] = [round(float(np.percentile(bs, 2.5)), 4), round(float(np.percentile(bs, 97.5)), 4)]
+    for i, x in enumerate(names):
+        for y in names[i + 1:]:
+            d = np.asarray(per_claim[x], float) - np.asarray(per_claim[y], float)
+            bs = d[idx].mean(1)
+            lo, hi = float(np.percentile(bs, 2.5)), float(np.percentile(bs, 97.5))
+            out["paired_diff"][f"{x} - {y}"] = {"mean": round(float(d.mean()), 4), "ci95": [round(lo, 4), round(hi, 4)],
+                                                 "excludes_zero": bool(lo > 0 or hi < 0)}
+    return out
+
+
 def evaluate(corpus, retrievers: dict, claims: list[dict], pool_docs: int, log=print) -> dict:
     from evret.search import Filters
     res = {"n_claims": len(claims), "variants": {}}
     reach = [reachable_flags(corpus, c) for c in claims]
     n_reach_claims = sum(any(r) for r in reach)
+    have = set(np.unique(corpus.doc_id).tolist())
+    from collections import Counter
+    states = Counter(gold_state(corpus, g, have) for c in claims for g in c["gold_variants"])
+    res["gold_url_states"] = dict(states)
     res["gold"] = {"gold_urls": sum(len(c["gold_variants"]) for c in claims),
                    "gold_urls_reachable": sum(sum(r) for r in reach), "claims_with_reachable_gold": n_reach_claims,
                    "claims_without_gold_url": sum(not c["gold_variants"] for c in claims)}
     leaks = {"sealed_or_unknown_doc_returned": 0, "own_article_returned": 0, "hits_checked": 0}
     store = {}
+    per = {}
     for vname, flags in (("default (fact-check excluded)", frozenset({"factcheck", "tiny"})),
                          ("ablation (fact-check included)", frozenset({"tiny"}))):
         res["variants"][vname] = {}
@@ -106,6 +147,10 @@ def evaluate(corpus, retrievers: dict, claims: list[dict], pool_docs: int, log=p
                 row[f"GoldRecall@{k}_reachable_claims"] = round(float(np.mean(recall_r)), 4) if recall_r else None
                 row[f"SourceHit@{k}_all_claims"] = round(float(np.mean(anyk)), 4)
             res["variants"][vname][rname] = row
+            for k in K_LIST:
+                for key, sel in (("any", 0), ("recall", 1)):
+                    per[(vname, k, key, rname)] = [source_hit([x.url for x in h], c["gold_variants"], k)[sel]
+                                                   for c, h in zip(claims, hits)]
             for c, h in zip(claims, hits):
                 for x in h:
                     leaks["hits_checked"] += 1
@@ -113,6 +158,13 @@ def evaluate(corpus, retrievers: dict, claims: list[dict], pool_docs: int, log=p
                     leaks["own_article_returned"] += hit_matches(x.url, set(c["exclude"]))
             log(f"  {vname} / {rname}: {row}")
     res["reachable_claims"] = n_reach_claims
+    mask = np.array([any(r) for r in reach])
+    res["bootstrap_reachable_claims"] = {}
+    for vname in res["variants"]:
+        for k in K_LIST:
+            for key in ("any", "recall"):
+                pc = {r: np.asarray(per[(vname, k, key, r)], float)[mask] for r in retrievers}
+                res["bootstrap_reachable_claims"][f"{vname} | {'SourceHit' if key == 'any' else 'GoldRecall'}@{k}"] =                     bootstrap(pc, list(retrievers))
     res["leakage_checks"] = leaks
     return res, store
 
@@ -167,6 +219,8 @@ def main(argv=None):
         lat[rname] = {"ms_per_query_single_median": round(1000 * float(np.median(ts)), 1)}
     res, store = evaluate(corpus, rets, claims, pool_docs)
     res["latency"] = lat
+    import shutil
+    res["free_disk_gb"] = round(shutil.disk_usage(a.corpus).free / 1e9, 1)
     res["peak_ram_gb"] = round(proc.memory_info().peak_wset / 1e9, 2) if hasattr(proc.memory_info(), "peak_wset") else None
     res["bands"] = a.bands
     res["n_chunks_searched"] = corpus.n

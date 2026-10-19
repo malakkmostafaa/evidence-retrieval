@@ -93,7 +93,7 @@ class Corpus:
         self.flags = np.concatenate([t.column("flags").to_numpy() for t in parts]).astype(np.int16)
         d = pq.read_table(os.path.join(root, "doc_index_pool.parquet"),
                           columns=["doc_id", "norm_url", "url", "host", "is_pdf", "pub_date", "date_source",
-                                   "is_factcheck", "is_tiny"]).to_pydict()
+                                   "is_factcheck", "is_tiny", "is_empty"]).to_pydict()
         self.docs = d
         self.url_to_docs: dict[str, list[int]] = {}
         for did, u in zip(d["doc_id"], d["norm_url"]):               # a document is found under its stored URL and

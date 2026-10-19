@@ -38,3 +38,16 @@ def test_load_claims_builds_exclusions_and_filters_by_band(tmp_path):
     assert c["gold_variants"] == [{"g.com/1"}]
     cl = ev.load_claims(str(tmp_path / "dev.json"), str(tmp_path / "ranks.json"), 30, [0, 1])
     assert cl[1]["exclude"] == {"orig2.com/q"}
+
+
+def test_bootstrap_paired_difference_by_hand():
+    import numpy as np
+    a = np.array([1, 1, 1, 1, 0, 0, 1, 1, 1, 1], float)         # mean 0.8
+    b = np.zeros(10)                                              # mean 0.0 -> paired difference 0.8, never 0 in a resample
+    r = ev.bootstrap({"a": a, "b": b}, ["a", "b"], n_boot=2000)
+    assert r["mean"] == {"a": 0.8, "b": 0.0}
+    assert r["paired_diff"]["a - b"]["mean"] == 0.8 and r["paired_diff"]["a - b"]["excludes_zero"]
+    lo, hi = r["ci95"]["a"]
+    assert 0.5 <= lo <= 0.8 <= hi <= 1.0
+    same = ev.bootstrap({"a": a, "b": a.copy()}, ["a", "b"], n_boot=500)
+    assert same["paired_diff"]["a - b"] == {"mean": 0.0, "ci95": [0.0, 0.0], "excludes_zero": False}

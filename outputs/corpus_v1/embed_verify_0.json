@@ -1,0 +1,20 @@
+{
+ "bands": [
+  0
+ ],
+ "sampled": 300,
+ "self_retrieval_rate": 1.0,
+ "of_which_exact_duplicate": 8,
+ "cosine_stored_vs_fresh": {
+  "median": 0.999998927116394,
+  "min": 0.9998825788497925,
+  "p01": 0.9999041557312012
+ },
+ "max_n_tokens_in_bands": 500,
+ "truncations_in_verification": 0,
+ "criteria": {
+  "self_retrieval>=0.99": true,
+  "median_cosine>=0.999": true,
+  "truncations==0": true
+ }
+}
