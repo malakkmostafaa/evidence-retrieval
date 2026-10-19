@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import math
+import time
 from collections import Counter
 from dataclasses import dataclass
 
@@ -97,6 +98,7 @@ class PassageStore:
 
     def __init__(self, cache: PageCache, enc, count, enc_id: str = MODEL_REVISION):
         self.cache, self.enc, self.count, self.enc_id = cache, enc, count, enc_id
+        self.t_chunk = 0.0          # seconds spent in the chunker (the encoder is timed by its caller)
         cache.ensure_table("CREATE TABLE IF NOT EXISTS chunks (key TEXT PRIMARY KEY, spans TEXT, vecs BLOB, n INTEGER)")
 
     def _key(self, page_key: str) -> str:
@@ -111,7 +113,9 @@ class PassageStore:
             return Prepared([tuple(s) for s in json.loads(spans)], arr)
         if not allow_compute:
             raise KeyError(f"passages not cached: {key}")
+        t0 = time.perf_counter()
         spans = [] if len(text) < TINY_CHARS else list(chunk_document(text, self.count))
+        self.t_chunk += time.perf_counter() - t0
         vecs = (self.enc.embed_passages([text[s:e] for s, e, *_ in spans]).astype(np.float16)
                 if spans else np.zeros((0, 384), np.float16))
         self.cache.execute("INSERT OR REPLACE INTO chunks VALUES (?,?,?,?)",

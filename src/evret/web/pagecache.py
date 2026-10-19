@@ -60,7 +60,12 @@ class PageCache:
                 tmp = f"{p}.{uuid.uuid4().hex}.tmp"                  # unique: two threads may store the same content
                 with open(tmp, "wb") as f:
                     f.write(zlib.compress(body, 6))
-                os.replace(tmp, p)
+                try:
+                    os.replace(tmp, p)
+                except OSError:                                          # Windows: another thread just stored the same content
+                    if not os.path.exists(p):
+                        raise
+                    os.remove(tmp)
         with self.lock:
             self.db.execute("INSERT OR REPLACE INTO pages VALUES (?,?,?,?,?,?,?,?,?,?)",
                             (rec.key, rec.url, rec.wayback_ts, rec.status, rec.http_status, rec.content_type,
