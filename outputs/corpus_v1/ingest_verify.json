@@ -1,0 +1,99 @@
+{
+ "reconciliation": {
+  "records": {
+   "ingest": 301754,
+   "audit": 301754,
+   "ok": true
+  },
+  "unique_keys": {
+   "ingest": 215226,
+   "audit": 215226,
+   "ok": true
+  },
+  "unique_nonempty_keys": {
+   "ingest": 166933,
+   "audit": 166933,
+   "ok": true
+  },
+  "unique_chars": {
+   "ingest": 10600102626,
+   "audit": 10600102626,
+   "ok": true
+  },
+  "max_n_chars": {
+   "ingest": 38503280,
+   "audit": 38503280,
+   "ok": true
+  }
+ },
+ "readback": {
+  "sampled": 200,
+  "identical": 200,
+  "different": 0,
+  "problems": [],
+  "documents_with_feature_in_sample": {
+   "u2028": 7,
+   "nul": 12,
+   "nonbmp": 82,
+   "surrogate": 0,
+   "pdf": 48
+  },
+  "special_docs_in_pool": 1359
+ },
+ "factcheck": {
+  "pool_documents": 138982,
+  "flagged": 1957,
+  "sample": [
+   "abcnews.go.com/Politics/joe-biden-town-hall-fact-checking-democratic-nominees/story?id=73062846",
+   "altnews.in/bjp-leader-accused-in-a-different-rape-case-claimed-to-be-father-of-hathras-accused",
+   "archive.news.indiana.edu/releases/iu/2016/12/iu-hoaxy.shtml",
+   "betterworldcampaign.org/global-health/fact-check-the-world-health-organization-and-covid-19",
+   "boomlive.in/26-11-mumbai-terror-attacks-film-stills-used-to-pay-tribute-to-martyred-cop-tukaram-omble",
+   "brennancenter.org/our-work/analysis-opinion/fact-checking-trumps-first-week-crime-and-voting",
+   "brookings.edu/articles/when-are-readers-likely-to-believe-a-fact-check",
+   "cbsnews.com/news/trump-town-hall-fact-check-claims-health-care-covid-19",
+   "chicagotribune.com/election-2020/ct-nw-democratic-debate-fact-check-south-carolina-20200226-pd5movcohrbthdiz77t3byd6my-story.html",
+   "cnn.com/2016/07/20/politics/gop-convention-speeches-fact-check/index.html",
+   "crosscut.com/politics/2020/10/election-fact-check-wa-or-ballots-cant-be-cancelled-online",
+   "cssh.northeastern.edu/fact-checking-joe-bidens-comparison-of-violent-crime-and-murders-data",
+   "edition.cnn.com/politics/live-news/vp-debate-coverage-fact-check-10-07-20/h_55da988b4646db2b58fd2c93ea26d973",
+   "factcheck.org/2018/06/is-illegal-immigration-linked-to-more-or-less-crime",
+   "factcheck.org/tag/republican-national-convention",
+   "fullfact.org/economy/guide-economy-deficit-41940",
+   "fullfact.org/media/uploads/tpfc-q1q2-2019.pdf",
+   "fullfact.org/online/instagram-privacy-meme",
+   "ghanafact.com/2020/08/fact-check-john-mahama-on-the-campaign-trail",
+   "icirnigeria.org/fact-check-peter-obis-eleven-false-claims-at-vp-debate",
+   "intermountainhealthcare.org/blogs/debunking-common-face-mask-misconceptions",
+   "misbar.com/en/how-we-work",
+   "nbcnews.com/politics/2020-election/vice-presidential-debate-2020-fact-checking-harris-pence-n1242501",
+   "newslaundry.com/2017/12/29/fake-news-altnews-hoaxslayer-post-truth-trump-modi",
+   "npr.org/2015/12/19/459850716/fact-check-did-obama-withdraw-from-iraq-too-soon-allowing-isis-to-grow",
+   "nymag.com/intelligencer/2016/09/the-sandy-hook-hoax.html",
+   "pbs.org/newshour/politics/ap-fact-check-trump-isnt-a-king-but-claims-expansive-power",
+   "politifact.com/article/2020/may/22/hunter-biden-and-china-sorting-through-murky-busin",
+   "politifact.com/factchecks/2015/nov/22/donald-trump/fact-checking-trumps-claim-thousands-new-jersey-ch",
+   "politifact.com/factchecks/2019/nov/01/facebook-posts/post-says-rep-matt-gaetz-has-numerous-duis-wrong",
+   "politifact.com/factchecks/2019/sep/13/donald-trump/trump-exaggerates-us-energy-independence",
+   "politifact.com/factchecks/2020/apr/08/donald-trump/trump-said-obama-admin-left-him-bare-stockpile-wro",
+   "politifact.com/search/stories?q=farrakhan",
+   "presidency.ucsb.edu/documents/trump-campaign-press-release-fact-check-joe-biden-cut-police-funding-vp-and-said-he-will",
+   "rollingstone.com/music/music-lists/the-10-wildest-led-zeppelin-legends-fact-checked-153103",
+   "snopes.com/fact-check/biden-lie-wife-killed-drunk-driver",
+   "snopes.com/fact-check/facebook-posts-made-public",
+   "snopes.com/fact-check/kyle-rittenhouse-punch-woman-video",
+   "thebulletin.org/2020/06/fact-checking-networks-fight-coronavirus-infodemic",
+   "theconversation.com/factcheck-qanda-did-government-gun-buybacks-reduce-the-number-of-gun-deaths-in-australia-85836",
+   "thelogicalindian.com/fact-check/baby-3-eyes-germany-sage-prediction-22331",
+   "thelogicalindian.com/fact-check/infrared-thermometer-22899",
+   "thelogicalindian.com/fact-check/muslim-lick-plates-coronavirus-covid-19-pandemic-20429",
+   "timesnownews.com/india/article/fact-check-no-rafale-jet-has-crashed-near-ambala-airbase-fake-iaf-tweet-in-circulation-says-pib/651185",
+   "twitter.com/afpfactcheck?lang=en",
+   "usatoday.com/story/news/factcheck/2020/05/28/fact-check-trace-act-does-not-force-covid-19-carriers-into-quarantine/5191769002",
+   "usatoday.com/story/news/factcheck/2020/08/29/fact-check-aarp-maintains-nonpartisan-stance/3393410001",
+   "usatoday.com/story/news/factcheck/2020/09/01/fact-check-cdcs-data-covid-19-deaths-used-misleading-claims/5681686002",
+   "vtdigger.org/2020/10/23/politifact-fact-checking-donald-trump-joe-biden-in-the-final-presidential-debate",
+   "vulture.com/2017/12/a-fact-checked-guide-whats-true-and-whats-not-in-i-tonya.html"
+  ]
+ }
+}
