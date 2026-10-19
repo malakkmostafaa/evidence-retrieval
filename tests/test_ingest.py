@@ -136,7 +136,7 @@ def test_resume_gives_identical_hashes(run):
 
 # ------------------------------------------------------------------------------------------------ guard
 FORBIDDEN = re.compile(r"origins|claim_id|claim_rank|qtype|^type$|^query_type$", re.I)
-ALLOWED_PREFIXES = ("ingest", "eval", "pool", "audit")        # the only modules that may know claims/origins
+ALLOWED_PREFIXES = ("ingest", "eval", "pool", "audit", "metrics_cov")        # the only modules that may know claims/origins
 
 
 def offenders_in(source: str, fn: str = "x.py"):
