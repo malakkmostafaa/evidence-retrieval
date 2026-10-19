@@ -67,3 +67,15 @@ Format as DECISIONS.md. Merged into DECISIONS.md later. Evidence is marked estab
 |---|---|---|
 | raw `.../web/<ts>id_/<url>` | original bytes, no toolbar/rewritten links | none notable |
 | normal replay | what a browser sees | injects Wayback banner text into the extracted page, rewritten links |
+
+---
+## Answers (Malak, 2026-10-19)
+- WQ1 = new worktree venv with CPU torch (.venv: ddgs 9.16.0, trafilatura 2.3.1, htmldate 1.11.0, pypdf 6.21.1, httpx 0.28.1, torch 2.14.1+cpu). BGE-small snapshot read from the shared HF cache (same pinned revision).
+- WQ2 = pypdf (light on RAM; layout quality on complex PDFs is a known limitation).
+- WQ3 = newest snapshot with status 200 at or before the claim date.
+- WQ4 = raw id_ form of the Wayback URL.
+
+## WD1a: ddgs backend = "duckduckgo" (provisional)   [methodology]   2026-10-19
+- Evidence (E, one probe, query "Eiffel Tower height in metres", region us-en, 3 s apart): duckduckgo 10 results (2.2 s), yahoo 7 (1.0 s); bing, brave, google, mojeek, startpage returned "No results found" at that moment. Recorded fixture: tests/web_fixtures/ddgs_duckduckgo_eiffel.json.
+- Alternatives: yahoo (fewer results), others (not working today). Backends can start/stop working at any time; the backend name is in the cache key and on every result.
+- Limitation: single probe, n=1 query; re-probe at WS5 start.
