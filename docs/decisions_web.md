@@ -101,3 +101,40 @@ Format as DECISIONS.md. Merged into DECISIONS.md later. Evidence is marked estab
 - Evidence: tests/test_web_select.py equivalence test: on the tiny corpus built by the real pipeline, the web path (own chunker call, own scoring) returns the same passages in the same order for 7 queries with RRF scores equal to 1e-12, dense to 1e-5, BM25 to 1e-4 relative; 14/14 injected bugs in select.py were caught.
 - Measured: BGE-small on this CPU (8 threads, fp32): 16.5 chunks/s for ~300-token chunks, model load 11 s. A page with 20 chunks therefore costs ~1.2 s, 10 pages ~12 s.
 - Limitations: BM25 float64 here vs float32 in the corpus (relative difference ~1e-7); df is frozen from the pool as it is today (all six bands final).
+
+
+## WD1b: Engine failures are failures, not "no results"   [engineering]   2026-10-19
+- Decision: an exception or an empty answer is retried (4 attempts, waits 2/4/8 s, 3 s spacing), then recorded as a search failure (`failures` table, replayed as `RecordedFailure`), never cached as an empty result. The tool returns no hits and sets `last_report.search_error`.
+- Evidence (E, smoke run): 81 search attempts: 15 ok, 62 `DDGSException: No results found`, 4 empty list. Two claims failed in all conditions; three claims first failed and later succeeded.
+- Limitation: a claim whose search failed counts as 0 gold hits; it is reported separately (13 of 15 claims had results).
+
+---
+## Open decisions after WS5 (waiting for Malak) - recommendation last
+
+### WQ5: Search reliability (62 of 81 attempts failed)
+| option | pros | cons | cost | evidence |
+|---|---|---|---|---|
+| keep duckduckgo only, accept failures | simplest, one backend recorded | web arm is sparse; 2 of 15 claims empty | none | E (this run) |
+| fallback backend `yahoo` when duckduckgo fails (backend stored per result) | gave 7 results in the earlier probe; no new software | second scraped engine with different ranking; also may be throttled | ~30 lines | E (one probe) |
+| SearXNG (self-hosted) | one aggregated, configurable interface | needs Docker or WSL on Windows; RAM is low; still scrapes engines | setup hours, ~500 MB RAM | A |
+| slower spacing (e.g. 10 s) | may reduce throttling | longer runs; no proof it helps | time | A |
+| Tavily / Serper (free tiers) | official APIs, stable | key needed, limited credits (1,000 / month; 2,500 one-time) | account | E (vendor pages, sources disagree on details) |
+Recommendation: yahoo fallback now, test SearXNG later if the web arm is kept.
+
+### WQ6: Date priority when a page has both a URL date and an htmldate value
+| option | pros | cons |
+|---|---|---|
+| htmldate first (current) | uses page content | page-chrome dates (2026) override a clear URL date: at least 2 of 31 "dated after" pages are wrong in this sample |
+| URL date first | URL dates are usually the publication date | absent for most pages; stale for re-published pages |
+| the EARLIER of the two | fewer false removals | can admit a leaked page whose URL carries an old date |
+| the LATER of the two | never admits a leak from a stale URL date | loses the pages above (same as current) |
+Recommendation: keep current (it never admits a leak) and report the false-removal rate from the manual review; revisit with more claims.
+
+### WQ7: Partial dates ("2020-03")
+Not met in this sample (0). Current rule: earliest possible day (consistent with the corpus, D5). Stricter alternative: latest possible day. Decide when it occurs.
+
+### WQ8: Query formulation
+Current: claim text unchanged. Alternatives: strip quotation marks, truncate to the first 200 characters, or extract keywords. None tested; the failures seen are throttling, not the query form. Recommendation: no change now.
+
+### WQ9: Held-out claims used
+Ranks 180-189 were used and inspected (as asked). From now on treat them as seen for the web tool.

@@ -20,6 +20,15 @@ BACKOFF_BASE = 2.0          # seconds; waits are 2, 4, 8, ... between attempts
 MAX_ATTEMPTS = 4
 
 
+class EmptyResult(RuntimeError):
+    """The engine answered with no result at all. Scraping engines do this when they throttle or block, so an empty answer is
+    treated as a failure (retried, never cached) rather than as 'the web has nothing'."""
+
+
+class RecordedFailure(RuntimeError):
+    """REPLAY: this search failed when the cache was recorded (engine error / empty answer); the failure is part of the snapshot."""
+
+
 class SearchProvider(ABC):
     name: str = "base"
 
@@ -149,6 +158,7 @@ class SearchCache:
         self.db = sqlite3.connect(path)
         self.db.execute("CREATE TABLE IF NOT EXISTS search (key TEXT PRIMARY KEY, provider TEXT, backend TEXT, "
                         "version TEXT, query TEXT, params TEXT, results TEXT, ts REAL)")
+        self.db.execute("CREATE TABLE IF NOT EXISTS failures (key TEXT PRIMARY KEY, error TEXT, ts REAL)")
         self.db.commit()
 
     @staticmethod
@@ -166,11 +176,21 @@ class SearchCache:
         self.db.execute("INSERT OR REPLACE INTO search VALUES (?,?,?,?,?,?,?,?)",
                         (key, provider, backend, version, query, json.dumps(params, sort_keys=True),
                          json.dumps([r.__dict__ for r in results], ensure_ascii=False), ts))
+        self.db.execute("DELETE FROM failures WHERE key=?", (key,))             # a later success replaces a recorded failure
         self.db.commit()
+
+    def put_failure(self, key: str, error: str, ts: float):
+        self.db.execute("INSERT OR REPLACE INTO failures VALUES (?,?,?)", (key, error, ts))
+        self.db.commit()
+
+    def get_failure(self, key: str):
+        row = self.db.execute("SELECT error FROM failures WHERE key=?", (key,)).fetchone()
+        return row[0] if row else None
 
     def manifest(self) -> list[tuple]:
         """(key, results-json) of every entry in key order. Timestamps are left out so re-fetching identical results keeps the hash."""
-        return self.db.execute("SELECT key, results FROM search ORDER BY key").fetchall()
+        rows = self.db.execute("SELECT key, results FROM search ORDER BY key").fetchall()
+        return rows + [(k, "FAILED:" + e) for k, e in self.db.execute("SELECT key, error FROM failures ORDER BY key")]
 
 
 class CachedSearch:
@@ -190,6 +210,9 @@ class CachedSearch:
         if hit is not None:
             return hit[0]
         if self.mode == Mode.REPLAY:
+            err = self.cache.get_failure(key)
+            if err is not None:
+                raise RecordedFailure(err)
             raise ReplayMiss(f"search not in cache: {p.name}/{p.backend} {query!r}")
 
         def call():
@@ -200,8 +223,15 @@ class CachedSearch:
             except Exception as e:
                 self.netlog.log("search", f"{p.name}/{p.backend}: {query}", f"error:{type(e).__name__}", self.clock() - t0)
                 raise
+            if not res:
+                self.netlog.log("search", f"{p.name}/{p.backend}: {query}", "error:EmptyResult", self.clock() - t0)
+                raise EmptyResult(f"{p.name}/{p.backend} returned no results")
             self.netlog.log("search", f"{p.name}/{p.backend}: {query}", "ok", self.clock() - t0, n=len(res))
             return res
-        res = with_backoff(call, sleep=self.sleep)
+        try:
+            res = with_backoff(call, sleep=self.sleep)
+        except Exception as e:
+            self.cache.put_failure(key, f"{type(e).__name__}: {str(e)[:120]}", self.clock())
+            raise
         self.cache.put(key, p.name, p.backend, p.version, query, params, res, self.clock())
         return res

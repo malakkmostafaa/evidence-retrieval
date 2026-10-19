@@ -131,6 +131,8 @@ def main(argv=None):
     tool, netlog = build_tool(a.cache, a.replay)
     path = os.path.join(a.out, "results_replay.json" if a.replay else "results.json")
     results = json.load(open(path))["results"] if a.resume and os.path.exists(path) else []
+    if a.resume:                                   # a failed search is redone; successful claims keep their (cold) timings
+        results = [r for r in results if not r.get("search_error") and r["counts"]["returned"] > 0]
     done = {(r["cond"], r["claim_id"]) for r in results}
     for cond in a.conds.split(","):
         for c in claims:

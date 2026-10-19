@@ -157,3 +157,25 @@ def test_web_scoring_with_corpus_statistics_equals_corpus_hybrid(world, tmp_path
     for h, v in idx.idfs(hs).items():
         assert abs(stats.idf(h) - v) < 1e-12
     assert stats.N == idx.N == 7 and abs(stats.avgdl - idx.avgdl) < 1e-12
+
+
+def test_bm25_scores_are_bit_identical_across_hash_seeds_and_netlog_lines_survive_threads(tmp_path):
+    import subprocess
+    import sys
+    code = ("from evret.web.select import PoolStats, bm25_scores; from evret import bm25 as bm; "
+            "q='alpha beta gamma delta epsilon zeta eta theta iota kappa'; "
+            "st=PoolStats(1000,50.0,{bm.term_hash(t):(i+2) for i,t in enumerate(q.split())}); "
+            "print(repr(bm25_scores(q,['alpha beta gamma delta epsilon zeta eta theta iota kappa alpha'],st)[0]))")
+    outs = {subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, env={**__import__("os").environ, "PYTHONHASHSEED": str(s)}).stdout
+            for s in (1, 2, 3, 4)}
+    assert len(outs) == 1 and outs != {""}
+    import json
+    import threading
+
+    from evret.web.netlog import NetLog
+    nl = NetLog(str(tmp_path / "n.jsonl"))
+    ts = [threading.Thread(target=lambda: [nl.log("fetch", "x" * 200, "ok", 0.1) for _ in range(200)]) for _ in range(8)]
+    [t.start() for t in ts]
+    [t.join() for t in ts]
+    lines = open(tmp_path / "n.jsonl", encoding="utf-8").read().splitlines()
+    assert len(lines) == 1600 and all(json.loads(x)["kind"] == "fetch" for x in lines)

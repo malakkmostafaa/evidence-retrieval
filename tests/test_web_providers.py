@@ -152,3 +152,33 @@ def test_queries_are_spaced_and_failures_are_logged_and_retried(tmp_path):
     st = [r["status"] for r in cs.netlog.records]
     assert st == ["error:RuntimeError", "ok", "ok"]
     assert ft.sleeps == [2.0, 1.0, 3.0]
+
+
+def test_empty_answer_is_a_failure_that_is_retried_and_never_cached(tmp_path):
+    from evret.web.providers import EmptyResult
+
+    class Empty(FakeProvider):
+        def search(self, query, n):
+            self.calls += 1
+            return []
+    p = Empty()
+    cs, ft = make(tmp_path, p)
+    with pytest.raises(EmptyResult):
+        cs.search("moon")
+    assert p.calls == 4 and cs.cache.db.execute("SELECT count(*) FROM search").fetchone()[0] == 0   # 4 attempts, no result stored
+    assert [r["status"] for r in cs.netlog.records] == ["error:EmptyResult"] * 4
+
+
+def test_failure_is_remembered_for_replay_and_cleared_by_a_later_success(tmp_path):
+    from evret.web.providers import RecordedFailure
+    p = FakeProvider(fail_first=4)
+    cs, ft = make(tmp_path, p)
+    with pytest.raises(RuntimeError):
+        cs.search("moon")
+    rp = CachedSearch(p, cs.cache, mode=Mode.REPLAY)
+    with pytest.raises(RecordedFailure):
+        rp.search("moon")                                                       # recorded failure, not ReplayMiss
+    with pytest.raises(ReplayMiss):
+        rp.search("sun")
+    cs.search("moon")                                                           # 5th call succeeds
+    assert rp.search("moon") and cs.cache.get_failure(SearchCache.key("fake", "b1", "1.0", "moon", {"n": 10})) is None

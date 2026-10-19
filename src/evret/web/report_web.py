@@ -66,8 +66,13 @@ def summary(results):
     fate = Counter(v for r in by.get("main", []) for v in r["gold"]["gold_fate"].values())
     n_gold = sum(r["n_gold"] for r in by.get("main", []))
     out.append(f"{n_gold} gold URLs in total; returned by the engine: {sum(fate.values())}; fate: " + (", ".join(f"{k}: {v}" for k, v in fate.most_common()) or "-"))
-    out.append("\n## Seconds per claim (main condition, cold cache; wall clock)\n")
-    rs = by.get("main", [])
+    out.append("\n## Search outcome (queries; engine = ddgs/duckduckgo)\n")
+    for c in conds:
+        ok = [r for r in by[c] if r["counts"]["returned"] > 0]
+        out.append(f"- {c}: {len(ok)} of {len(by[c])} claim queries returned results; {len(by[c]) - len(ok)} failed "
+                   f"(error or empty answer after 4 attempts): claims " + ", ".join(str(r["claim_id"]) for r in by[c] if r["counts"]["returned"] == 0))
+    out.append("\n## Seconds per claim (main condition; cold = the claim's pages were not cached yet, i.e. Wayback time > 0.5 s)\n")
+    rs = [r for r in by.get("main", []) if r["seconds"]["wayback"] > 0.5]
     if rs:
         tot = sum(r["wall_s"] for r in rs)
         out.append("| step | mean s/claim | share of step time |\n|---|---|---|")
@@ -76,6 +81,7 @@ def summary(results):
         for s in STEPS:
             out.append(f"| {s} | {st[s]:.1f} | {pct(st[s], ssum)} |")
         out.append(f"| **total (wall)** | {tot / len(rs):.1f} | |")
+        out.append(f"\nn = {len(rs)} cold claims (of {len(by['main'])}).")
         out.append(f"\nPassages per claim (mean): {sum(r['n_passages'] for r in rs) / len(rs):.1f}; claims with 0 passages: {sum(r['n_passages'] == 0 for r in rs)}.")
     return "\n".join(out)
 

@@ -19,3 +19,9 @@
 - Tried: WebHit (subclass of the corpus Hit), pool statistics (N, avgdl, df from term offsets), BM25 and RRF for web passages, per-page chunk/vector cache, equivalence test against the corpus Hybrid.
 - Happened: 8 tests pass; 14/14 injected bugs caught (3 initially survived: df=0 term, query-vs-passage encoder, RRF depth - tests added). CPU embedding speed measured: 16.5 chunks/s. Failed attempt: my first new test used frozen stats without the query term and raised the intended KeyError (correct behaviour, test fixed).
 - Next: WS5 - assemble search_web, evaluation layer, run 10 held-out + 5 pooled claims, write docs/reports/web_tool_v1.md.
+
+
+## 2026-10-19 (WS5)
+- Tried: search_web assembly (filters, Wayback, fetch, extract, date filter, chunk/embed, select), evaluation layer, live smoke run on 15 claims x 3 conditions, replay checks, report.
+- Happened: 118 tests pass; replay = 45/45 identical, 0 network calls, same manifest hash. Failed attempts: (1) the first live run crashed on claim 485 because the engine raised after 4 retries -> failures are now recorded and the run continues; (2) three claims' main runs had failed searches while the ablations succeeded -> resumable run that redoes failed searches; (3) empty engine answers had been cached as results (2 entries) -> now failures, entries purged; (4) replay differed from live in the 16th digit because the BM25 sum order depended on PYTHONHASHSEED -> sorted terms + test; (5) NetLog lines interleaved across threads -> lock + test; (6) a Windows race when two threads stored identical blob content (found by a test) -> fixed. Findings: 62 of 81 search attempts failed; 26% of URLs dated after the claim; Wayback covers 25%; 1 of 15 claims has a gold URL in the results.
+- Next: Malak decides WQ5-WQ9; then merge docs_web files into DECISIONS.md / LOG.md and hand the WebHit candidates to the shared reranker block.

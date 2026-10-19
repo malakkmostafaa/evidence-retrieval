@@ -71,7 +71,7 @@ def bm25_scores(query: str, passages: list[str], stats: PoolStats, k1: float = b
     """score(d) = sum_t idf(t) * tf (k1+1) / (tf + k1 (1 - b + b dl / avgdl)) over the UNIQUE query terms (same as evret.bm25)."""
     hashes = sorted({bm.term_hash(t) for t in bm.tokenize(query)})
     idf = {h: stats.idf(h) for h in hashes}
-    by_tok = {t: bm.term_hash(t) for t in set(bm.tokenize(query))}
+    by_tok = {t: bm.term_hash(t) for t in sorted(set(bm.tokenize(query)))}      # sorted: float sums must not depend on set order / PYTHONHASHSEED
     out = np.zeros(len(passages))
     for i, text in enumerate(passages):
         toks = bm.tokenize(text)

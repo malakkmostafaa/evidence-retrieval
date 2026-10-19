@@ -230,7 +230,10 @@ def test_a_failing_engine_gives_no_hits_and_a_recorded_error_but_replay_miss_sti
     assert tool.search_web(QUERY, claim_context=CLAIM) == []
     assert tool.last_report.search_error.startswith("RuntimeError") and tool.last_report.counts()["search_failed"] == 1
     assert not reqs                                                              # nothing else was attempted
-    assert tool.search.cache.manifest() == []                                    # a failure is never cached as 'no results'
+    assert len(tool.search.cache.manifest()) == 1 and tool.search.cache.manifest()[0][1].startswith("FAILED:")   # failure is recorded, not a result
+    assert tool.search.cache.db.execute("SELECT count(*) FROM search").fetchone()[0] == 0                       # ... and never as 'no results'
     rtool, _ = build(tmp_path, mode=Mode.REPLAY)
+    assert rtool.search_web(QUERY, claim_context=CLAIM) == []                     # replay reproduces the failure
+    assert rtool.last_report.search_error.startswith("RecordedFailure: RuntimeError")
     with pytest.raises(ReplayMiss):
-        rtool.search_web(QUERY, claim_context=CLAIM)
+        rtool.search_web("a query that was never run", claim_context=CLAIM)
