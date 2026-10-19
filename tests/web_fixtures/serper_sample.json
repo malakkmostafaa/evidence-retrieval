@@ -1,0 +1,10 @@
+{"note": "hand-built in the documented serper.dev /search response shape (not recorded; no key was available for unit tests)",
+ "searchParameters": {"q": "example", "gl": "us", "hl": "en", "num": 10, "type": "search"},
+ "organic": [
+  {"title": "C three", "link": "https://c.example/3", "snippet": "snippet c3", "position": 3},
+  {"title": "A one", "link": "https://a.example/1", "snippet": "snippet a1", "position": 1},
+  {"title": "A one again", "link": "https://a.example/1", "snippet": "dup", "position": 4},
+  {"title": "B two", "link": "https://b.example/2", "snippet": "snippet b2", "position": 2}
+ ],
+ "relatedSearches": [{"query": "ignored"}],
+ "credits": 1}

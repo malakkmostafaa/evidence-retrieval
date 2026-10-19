@@ -1,0 +1,15 @@
+{
+ "manifest_hash": "47367148e08f187b0486365752a20c045a1d84fb6085bde039bc8fab7d5ecee0",
+ "n_network_calls": {
+  "search": 15,
+  "cdx": 123,
+  "robots": 64,
+  "fetch": 65,
+  "fetch_wayback": 22
+ },
+ "mode": "live",
+ "provider": "serper/google/serper-search-v1",
+ "live_queries_this_invocation": 15,
+ "live_queries_total_on_this_machine": 15,
+ "last_credits_reported": 1
+}

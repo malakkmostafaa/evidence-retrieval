@@ -1,0 +1,11 @@
+{
+ "note": "hand-built in the documented SearXNG /search?format=json shape (not recorded: no instance is running)",
+ "query": "example",
+ "results": [
+  {"url": "https://a.example/1", "title": "A one", "content": "snippet a1", "engine": "duckduckgo", "position": 1},
+  {"url": "https://b.example/2", "title": "B two", "content": "snippet b2", "engine": "bing", "position": 2},
+  {"url": "https://a.example/1", "title": "A one again", "content": "dup", "engine": "bing", "position": 3},
+  {"url": "", "title": "no url", "content": "x", "engine": "bing", "position": 4},
+  {"url": "https://c.example/3", "title": "C three", "content": "snippet c3", "engine": "brave", "position": 5}
+ ]
+}
