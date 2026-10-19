@@ -24,3 +24,7 @@ Three lines per session: tried / happened / next. Failed attempts belong here.
 
 ## 2026-10-19 (decision)
 - Tried: compared my chunker with the legacy one. Happened: they differ (D9a); Malak decided to keep mine. Next: wait for bands 2-5 embeddings, then re-run S5 on all six bands and finish docs/reports/corpus_tool_v1.md (add the CovNovel@512 table from outputs/corpus_v1/eval_bands_0_1.json).
+
+## 2026-10-19 (full pool)
+- Tried: whole-pool embedding check and S5 on all 180 pool claims. Happened: all checks pass (self-retrieval 300/300, 0 truncations, 0 leaks in 54,000 hits); dense and hybrid better than BM25, dense vs hybrid not separable. Report: docs/reports/corpus_tool_v1.md. Free disk 18.4 GB.
+- Next: sealed bands stay untouched; optional 50-passage relabelling and chunker comparison are proposals only.

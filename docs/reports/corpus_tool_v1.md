@@ -1,46 +1,65 @@
-# Corpus tool v1 - report (bands 0-1 evaluated; full-pool run in progress)
+# Corpus tool v1 - report (full pool, bands 0-5)
 
-Status 2026-10-19. Searched corpus: pool bands 0-1 (2,758,511 chunks); pool total = bands 0-5 = 6,415,863 chunks (embedding of bands 2-5 running, ~6 h). Re-run `python -m evret.eval_pool ... --bands 0 1 2 3 4 5` when done. **Free disk now: 32.0 GB.**
+Date 2026-10-19. Searched corpus: pool bands 0-5, 6,415,863 chunks from 138,982 pool documents; the 4 sealed bands were never chunked, embedded or indexed. Evaluated: all 180 pooled claims (claim text = query; gold used only for scoring). Raw numbers: `outputs/corpus_v1/eval_bands_0_1_2_3_4_5.json`; examples for you to judge: `outputs/corpus_v1/examples_bands_0_1_2_3_4_5.md`.
+**Free disk now: 18.4 GB (was 56.6 GB at the start). Peak RAM of the evaluation: 7.8 GB.**
 
 ## What was built and verified
 | stage | result |
 |---|---|
-| S1 ingest | 301,754 records -> 215,226 documents; unique non-empty keys, unique chars (10,600,102,626) and max length (38,503,280) equal the audit; 200/200 sampled documents byte-identical; real shards regenerate with identical sha256 |
-| S2 chunk | pool 6,415,863 chunks (band 0: 1,580,741; 72% PDF; 10% split by the cap); sampled checks bands 0-5: 0 span / hash / coverage errors, 0 token mismatches, max 500 tokens |
-| S3 embed | band 0: self-retrieval 300/300, median stored-vs-fresh cosine 0.999999, 0 truncations; ~300 chunks/s |
-| S4 search | dense / BM25 / hybrid, filters, `search_batch`; pool-wide BM25 statistics proven by an equivalence test |
+| S1 ingest | 301,754 records -> 215,226 documents; unique non-empty keys, characters (10,600,102,626) and maximum length (38,503,280) equal the audit; 200/200 sampled documents byte-identical; regenerated real shards have identical sha256 |
+| S2 chunk | 6,415,863 chunks; sampled checks on every band: 0 span / hash / coverage errors, 0 token mismatches, max 500 tokens, max 4,971 chars; ~10% of chunks split by the cap (mostly PDF) |
+| S3 embed | all 6 bands; whole-pool check: self-retrieval 300/300 (8 via exact duplicates), median stored-vs-fresh cosine 1.000001 (min 0.99984), 0 truncations; ~300 chunks/s (GPU throttled to ~650 MHz) |
+| S4 search | dense (exact), BM25 (pool-wide statistics, proven by an equivalence test), hybrid (RRF k=60, top-100 each), filters, `search_batch` |
+| S5 | this report; metrics from the shared module `evret.metrics_cov` (D14) |
 
-## SourceHit on bands 0-1 (60 claims; gold only used for scoring)
-Reachable claims = 48 of 60 (>= 1 gold URL has an indexed, non-fact-check document). Default filters (fact-check pages excluded). Claim text is the query; k counts chunks. 95% bootstrap CIs resample claims (10,000 draws); differences are paired per claim.
+## Results (default filters: fact-check pages excluded; k counts chunks; 95% bootstrap CIs over claims, paired differences per claim)
+**SourceHit / GoldRecall** - reachable claims = 137 of 180 (>= 1 gold URL has an indexed, non-fact-check document):
 
-| metric (reachable claims, n = 48) | dense | BM25 | hybrid |
+| metric | dense | BM25 | hybrid |
 |---|---|---|---|
-| SourceHit@10 | 0.250 [0.125, 0.375] | 0.167 [0.063, 0.271] | 0.229 [0.125, 0.354] |
-| SourceHit@50 | 0.438 [0.292, 0.583] | 0.333 [0.208, 0.458] | 0.438 [0.292, 0.583] |
-| GoldRecall@10 | 0.153 [0.074, 0.241] | 0.118 [0.042, 0.207] | 0.160 [0.073, 0.260] |
-| GoldRecall@50 | 0.293 [0.188, 0.408] | 0.241 [0.137, 0.356] | 0.291 [0.182, 0.408] |
+| SourceHit@10 | 0.197 [0.131, 0.263] | 0.153 [0.095, 0.212] | 0.204 [0.139, 0.277] |
+| SourceHit@50 | 0.423 [0.343, 0.504] | 0.314 [0.241, 0.394] | 0.402 [0.321, 0.482] |
+| GoldRecall@10 | 0.134 [0.086, 0.186] | 0.098 [0.058, 0.143] | 0.141 [0.091, 0.195] |
+| GoldRecall@50 | 0.287 [0.224, 0.351] | 0.213 [0.155, 0.273] | 0.266 [0.204, 0.329] |
 
-Paired differences (95% CI): at k = 10 no pair differs (dense - BM25 SourceHit@10 = +0.083 [-0.021, +0.208]). At k = 50 only hybrid > BM25 has a CI excluding 0 (SourceHit@50 +0.104 [+0.021, +0.208]; GoldRecall@50 +0.050 [+0.016, +0.093]); dense - BM25 SourceHit@50 = +0.104 [0.000, +0.229] touches zero. **Conclusion: with 48 claims the three methods cannot be ranked, except that BM25 alone is weaker than hybrid at k = 50.** Including fact-check pages (F3 ablation) changes nothing for dense and BM25 and lowers hybrid@10 (0.229 -> 0.188), but that is within noise. Full tables: `outputs/corpus_v1/eval_bands_0_1.json`. Top-5 examples for 5 claims, for you to judge: `outputs/corpus_v1/examples_bands_0_1.md`.
+**Answer coverage** (legacy metrics, fixed budget of 512 BGE tokens; claims with >= 1 anchored answer: 91 of 180, 88 with a defined CovNovel):
 
-## Why 58 of 173 gold URLs are unreachable (bands 0-1)
+| metric | dense | BM25 | hybrid |
+|---|---|---|---|
+| CovNovel@512 (primary) | 0.403 [0.344, 0.464] | 0.313 [0.266, 0.364] | 0.377 [0.320, 0.436] |
+| CovUnion@512 | 0.468 [0.410, 0.527] | 0.400 [0.351, 0.451] | 0.448 [0.393, 0.505] |
+| AnswerRecall@10 | 0.277 [0.193, 0.363] | 0.229 [0.149, 0.312] | 0.294 [0.205, 0.384] |
+
+**What the paired differences allow us to say** (differences whose 95% CI excludes 0):
+- Dense > BM25: SourceHit@50 +0.110 [+0.051, +0.168]; GoldRecall@50 +0.075 [+0.033, +0.118]; CovNovel@512 +0.089 [+0.036, +0.143]; CovUnion@512 +0.067 [+0.024, +0.111]. Dense is better than BM25 at deeper cut-offs and in answer coverage.
+- Hybrid > BM25: SourceHit@50 +0.088 [+0.044, +0.139]; CovNovel@512 +0.063 [+0.020, +0.108]; CovUnion@512 +0.048 [+0.012, +0.085]; AnswerRecall@10 +0.066 [+0.015, +0.121].
+- **Dense vs hybrid: no difference at any k = 10 / 50 or in CovNovel@512 / CovUnion@512 (all CIs include 0), so they are not ranked.** Only the variable-length "CovNovel@10" favours dense over hybrid (+0.026 [+0.005, +0.048]); that metric favours large chunks and is not the primary one.
+- At k = 10, SourceHit does not separate any pair.
+- Including fact-check pages (F3 ablation) changes SourceHit@50 by -0.007 (dense), 0 (BM25), -0.007 (hybrid); no effect worth reporting.
+
+## Why 188 of 481 gold URLs are unreachable
 | state | gold URLs |
 |---|---|
-| reachable | 115 |
-| empty text (scrape returned nothing) | 52 |
-| tiny text (< 200 chars) | 2 |
-| fact-check flag (excluded by F3) | 4 |
+| reachable | 293 |
+| empty text (the scrape returned nothing) | 149 |
+| tiny text (< 200 characters) | 15 |
+| fact-check flag (excluded by F3 default) | 24 |
 | not in the document table | 0 |
-
-(On the 30 band-0 claims alone: 27 of 91.) Almost all losses are empty scrapes, i.e. a property of the knowledge store (the audit found 262 of 638 gold records empty), not of retrieval.
+So 31% of gold URLs, and 43 of 180 claims, cannot be found by any text retriever because the knowledge store holds no usable text for them (mostly empty scrapes).
 
 ## Leakage checks
-18,000 hits checked (60 claims x 3 retrievers x 50 x 2 filter variants): 0 documents outside the pool, 0 hits on a claim's own fact-checking article / original-claim URL (after Wayback unwrapping, D12). Sealed bands do not exist in any artefact.
+54,000 hits checked (180 claims x 3 retrievers x 50 x 2 filter variants): **0 documents outside the pool, 0 hits on a claim's own fact-checking article / original-claim URL** (Wayback-unwrapped, D12). Sealed bands do not exist in any artefact; the 43 sealed label rows of the metric regression were never re-anchored (D15).
 
-## Costs (2 bands searched)
-Single query median: dense 683 ms, BM25 435 ms, hybrid 998 ms; batched 60 claims: 36 / 293 / 326 ms per query. Peak RAM 4.8 GB. Dense search streams all vectors, so it grows linearly with bands (about 5 GB of float16 vectors for the whole pool). Disk (pool): documents 2.0 GB, chunk Parquet ~4 GB, SQLite text 9.9 GB, BM25 4.5 GB, vectors ~4.9 GB when finished.
+## Costs
+- Time: ingest 6 min, chunking ~35 min (4 workers), embedding ~6 h (300 chunks/s), BM25 ~10 min.
+- Query latency (all 6 bands): single query median dense 1.18 s, BM25 1.03 s, hybrid 1.79 s (dense streams 4.6 GB of vectors); batched 180 claims: dense 30 ms, BM25 612 ms, hybrid 605 ms per query.
+- RAM: 7.8 GB peak for evaluation (6.4M chunk metadata + memmapped postings/vectors).
+- Disk (data/corpus_v1): SQLite chunk text 9.3 GB (derived, rebuildable), BM25 4.5 GB, vectors 4.6 GB, chunk Parquet 2.4 GB, documents 2.0 GB.
 
-## Not done / limitations
-- **CovNovel@512 not added**: its definition is not in this repository or on the Desktop; please give me the definition (or the old code) and I will add it next to SourceHit.
-- Numbers are for 2 of 6 bands and 60 claims; do not quote them as the final result.
-- The old split file was not found; the pool differs from the earlier experiments.
-- Fact-check flag precision about 72% (D8); chunk split rate 10% (D9).
+## Limitations
+- The pool is a fresh stratified ranking, NOT the earlier experiments' pool (old split file not found); the chunker differs from the legacy pack_200_250 (D9a), so chunk-level numbers are not comparable with experiments 04b/05.
+- Only 137 claims have a reachable gold page and 91 have an anchored answer; CIs are wide and several differences are small.
+- The fact-check flag has about 72% precision (D8); gold annotation anchoring over-represents extractive evidence (D14).
+- The metrics are validated only as a regression against the old labels (D14, D15), not on this corpus; the optional 50-passage relabelling is proposed, not run.
+- BM25 is my own implementation (validated on a toy corpus, D11/D13); dense search is exact but slow for single queries (1.2 s).
+- Sealed bands 6-9 (120 claims) remain untouched for the final test.
