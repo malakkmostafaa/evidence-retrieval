@@ -79,3 +79,12 @@ Format as DECISIONS.md. Merged into DECISIONS.md later. Evidence is marked estab
 - Evidence (E, one probe, query "Eiffel Tower height in metres", region us-en, 3 s apart): duckduckgo 10 results (2.2 s), yahoo 7 (1.0 s); bing, brave, google, mojeek, startpage returned "No results found" at that moment. Recorded fixture: tests/web_fixtures/ddgs_duckduckgo_eiffel.json.
 - Alternatives: yahoo (fewer results), others (not working today). Backends can start/stop working at any time; the backend name is in the cache key and on every result.
 - Limitation: single probe, n=1 query; re-probe at WS5 start.
+
+## WD2a: Wayback CDX query (verified live 2026-10-19)   [engineering]
+- Request: `GET https://web.archive.org/cdx/search/cdx?url=<url>&output=json&fl=timestamp,original,statuscode,mimetype,digest&filter=statuscode:200&to=<claim date>235959&limit=-1`. Verified: `to` is an inclusive upper bound; `limit=-1` returns the LAST (= newest) matching row, i.e. the newest 200-snapshot at or before the claim date (WQ3); an unknown URL returns `[]`; the first JSON row is the header. `sort=closest&closest=...` also worked once but is not needed. Recorded fixtures: tests/web_fixtures/cdx_*.json.
+- Snapshot fetch: `https://web.archive.org/web/<timestamp>id_/<original>` (raw bytes, WQ4). Verified: returns text/html of the capture; a requested timestamp without an exact capture is redirected to the nearest one (can be EARLIER or LATER), so we request only timestamps taken from the CDX answer and re-check that the final URL's timestamp is <= the claim date.
+- "At or before the claim date" is evaluated at day granularity (to = YYYYMMDD235959).
+
+## WD4a: Fetcher details   [engineering]   2026-10-19
+- Decision: robots.txt per RFC 9309 (4xx = allowed; 5xx/unreachable = disallowed; robots not applied to web.archive.org snapshots); retries on timeout/transport error/429/5xx: 3 attempts, waits 1 s and 2 s; 404 etc. recorded, not retried; archive.org spaced >= 1 s between requests; per-request deadline 45 s; raw bytes stored zlib-compressed by sha256 (lets us re-run extraction without re-downloading). User-Agent: `evret-thesis-bot/0.1 (academic research, bachelor thesis; non-commercial; ...)`, WITHOUT a contact e-mail (none was authorised); add one via `Fetcher(user_agent=...)` if the supervisor wants it.
+- Limitation: robots is checked for the first URL only, not for each redirect hop.
