@@ -28,3 +28,6 @@ Three lines per session: tried / happened / next. Failed attempts belong here.
 ## 2026-10-19 (full pool)
 - Tried: whole-pool embedding check and S5 on all 180 pool claims. Happened: all checks pass (self-retrieval 300/300, 0 truncations, 0 leaks in 54,000 hits); dense and hybrid better than BM25, dense vs hybrid not separable. Report: docs/reports/corpus_tool_v1.md. Free disk 18.4 GB.
 - Next: sealed bands stay untouched; optional 50-passage relabelling and chunker comparison are proposals only.
+
+## 2026-10-20 (relabelling)
+- Tried: report fixes (one unreachable-gold definition, n per table); relabelling design and blinded sheet (50 passages, 43 claims, 17/17/16 dense/BM25/hybrid, full chunk text); scoring script written but not run. Happened: label wording confirmed by Malak. Key file and labels not opened. Next: Malak labels outputs/corpus_v1/relabel/relabel_sheet_TO_LABEL.csv and returns it; then `python scripts/score_relabel.py <file>`.

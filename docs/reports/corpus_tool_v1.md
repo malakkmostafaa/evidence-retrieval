@@ -77,7 +77,7 @@ So "empty only" is 31%, "empty plus tiny" is 34%, "all reasons" is 39%. The fact
 - Blinding: the sheet has no arm names, no ranks, no scores; rows are shuffled. The key file `relabel_KEY_do_not_open.json` stays closed until the labels are returned; I have not opened it or the labels.
 - Shown: the claim and the FULL chunk text (not cut at 1,500 characters; at most 5,000 characters / 500 tokens). Control characters would be replaced by spaces in the CSV: 0 occurred.
 
-**Labels (0/1/2).** 2 = contains information that helps decide the claim; 1 = on topic but not enough; 0 = irrelevant / noise. (Wording taken from the legacy `manual_sheet` docstring; section 16 of the BM25 design record could not be located in the files I can see, so please confirm the wording.)
+**Labels (0/1/2).** 2 = contains information that helps decide the claim; 1 = on topic but not enough; 0 = irrelevant / noise. (Wording taken from the legacy `manual_sheet` docstring; confirmed by Malak on 2026-10-20.)
 
 **Evaluation rules, fixed now.**
 1. Overlap score of a passage = the largest share, over the claim's anchored answers, of the answer's content tokens found in the passage (`best_recall`). Primary score: NOVEL words (answer tokens minus the claim's tokens; answers with < 3 novel tokens are skipped; passages with no such answer are dropped from this analysis and counted). Secondary score: all answer words.
