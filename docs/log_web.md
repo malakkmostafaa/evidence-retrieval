@@ -45,3 +45,8 @@
 - Tried: metrics_cov (merged by Malak) on the web top-50, corpus re-run on CPU for per-claim values, paired bootstrap; lenient pre-registered, replayed from cache, compared paired against main.
 - Happened: corpus numbers reproduce the corpus report (to 0.001); web CovNovel@512 0.273 vs corpus dense 0.403 / hybrid 0.376 (paired -0.13 / -0.10, CIs exclude 0), vs BM25 -0.04 (CI includes 0); lenient +0.015 to +0.020, CIs include 0, 9 of 88-91 claims change, 17 of 27 added pages mention years after 2020. 0 queries, 0 network calls (counter 191). Failed attempt: none in the runs; the per-claim corpus values had to be recomputed because only means were stored.
 - Next: fact-check condition (leakage diagnostic) only after approval.
+
+## 2026-10-20 (fact-check diagnostic)
+- Tried: fact-check condition on the 180 pool claims (no queries; new page fetches), replay check, paired comparison against main.
+- Happened: 46 of 175 fact-check URLs kept (67 dated after, 59 blocked); CovNovel +0.024 [-0.002,+0.052], CovUnion +0.033 [+0.005,+0.065]; no gold gain; replay identical, counter unchanged (191). Found: 2 URLs differed for a non-planned reason (transient Wayback lookup errors in main). Corrected an earlier statement: the 10 gold entries lost as fact-check domains are 3 distinct pages.
+- Next: nothing pending; sealed claims not touched.

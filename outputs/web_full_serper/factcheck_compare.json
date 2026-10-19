@@ -1,0 +1,197 @@
+{
+ "consistency": {
+  "claims": 180,
+  "inconsistent_claims": [
+   328,
+   463
+  ],
+  "claims_without_added_pages_identical": 95,
+  "claims_with_relaxed_url_in_main": 83,
+  "of_those_top50_changed": 30
+ },
+ "added_funnel": {
+  "relaxed_in_main": 175,
+  "still_removed_other": 129,
+  "still_removed_tiny_or_no_text": 0,
+  "kept_in_lenient": 46,
+  "chunked": 46,
+  "with_passage_in_top50": 46,
+  "claims_with_added_page": 83,
+  "claims_with_added_page_in_top50": 30,
+  "top50_passages_total_lenient": 3934,
+  "top50_passages_from_added": 226,
+  "added_pages_gold": 0,
+  "added_pages_in_top5_claims": 40
+ },
+ "paired": {
+  "n_claims_all": 91,
+  "n_claims_kept_main": 75,
+  "n_claims_kept_lenient": 78,
+  "variants": {
+   "primary_all_claims": {
+    "cov_novel": {
+     "n": 88,
+     "main": [
+      0.27342172172023627,
+      [
+       0.21677203150912996,
+       0.3329057264783405
+      ],
+      88
+     ],
+     "factcheck": [
+      0.2969515319237768,
+      [
+       0.24022973288582744,
+       0.35632443963158666
+      ],
+      88
+     ],
+     "claims_with_nonzero_diff": 11,
+     "factcheck_minus_main": {
+      "n_claims": 88,
+      "mean_diff": 0.023529810203540603,
+      "sd_diff": 0.12926774600367755,
+      "ci95.0": [
+       -0.0015689734069668268,
+       0.05219858081125541
+      ],
+      "ci98.33": [
+       -0.00643008897592392,
+       0.05965506643609491
+      ],
+      "wins": 7,
+      "ties": 77,
+      "losses": 4
+     }
+    },
+    "cov_union": {
+     "n": 91,
+     "main": [
+      0.33442602352711376,
+      [
+       0.2751199454540877,
+       0.3953781451937825
+      ],
+      91
+     ],
+     "factcheck": [
+      0.3669822298632005,
+      [
+       0.3083553520057326,
+       0.4265236873907465
+      ],
+      91
+     ],
+     "claims_with_nonzero_diff": 13,
+     "factcheck_minus_main": {
+      "n_claims": 91,
+      "mean_diff": 0.032556206336086725,
+      "sd_diff": 0.14583045846236503,
+      "ci95.0": [
+       0.0052723297804819534,
+       0.06522836394278246
+      ],
+      "ci98.33": [
+       0.0005320523960445682,
+       0.07295760119196973
+      ],
+      "wins": 9,
+      "ties": 78,
+      "losses": 4
+     }
+    }
+   },
+   "secondary_claims_with_kept_page_in_factcheck": {
+    "cov_novel": {
+     "n": 75,
+     "main": [
+      0.3208148201517439,
+      [
+       0.2613467922641908,
+       0.38415444690565287
+      ],
+      75
+     ],
+     "factcheck": [
+      0.3484231307905648,
+      [
+       0.2903672674772044,
+       0.4110727690343073
+      ],
+      75
+     ],
+     "claims_with_nonzero_diff": 11,
+     "factcheck_minus_main": {
+      "n_claims": 75,
+      "mean_diff": 0.027608310638820976,
+      "sd_diff": 0.13975548268633853,
+      "ci95.0": [
+       -0.0013724670324902514,
+       0.061690934999995714
+      ],
+      "ci98.33": [
+       -0.006378352157639084,
+       0.07098700071887434
+      ],
+      "wins": 7,
+      "ties": 64,
+      "losses": 4
+     }
+    },
+    "cov_union": {
+     "n": 78,
+     "main": [
+      0.39016369411496604,
+      [
+       0.3303947646591275,
+       0.4536801102124526
+      ],
+      78
+     ],
+     "factcheck": [
+      0.4281459348404007,
+      [
+       0.3699125428996136,
+       0.4875472153822823
+      ],
+      78
+     ],
+     "claims_with_nonzero_diff": 13,
+     "factcheck_minus_main": {
+      "n_claims": 78,
+      "mean_diff": 0.03798224072543451,
+      "sd_diff": 0.15699746816226332,
+      "ci95.0": [
+       0.006382539451246644,
+       0.07519766619886911
+      ],
+      "ci98.33": [
+       0.0010372802615953305,
+       0.08433710295766052
+      ],
+      "wins": 9,
+      "ties": 65,
+      "losses": 4
+     }
+    }
+   }
+  }
+ },
+ "gold": {
+  "main": {
+   "claims_gold_in_top50": 11,
+   "claims_gold_in_top10": 10,
+   "claims_gold_in_kept": 11,
+   "claims_with_kept_page": 144,
+   "kept_pages": 416
+  },
+  "factcheck": {
+   "claims_gold_in_top50": 11,
+   "claims_gold_in_top10": 10,
+   "claims_gold_in_kept": 11,
+   "claims_with_kept_page": 150,
+   "kept_pages": 464
+  }
+ }
+}

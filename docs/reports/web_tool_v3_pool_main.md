@@ -14,7 +14,7 @@ Date: 2026-10-19. 180 pool claims (ranks 0-179 = bands 0-5, from the shared `ran
 | in top-50 passages | 15 | 11 |
 | in top-10 / top-5 passages | 12 / - | 10 / 9 |
 
-Reading: of the 28 returned gold entries, 10 were removed as fact-check domains (the annotators themselves used fact-checkers for part of their sources; WD3 ablation) and 3 by robots.txt; every gold entry that was fetched also passed the date filter and reached the top-50. The loss is overwhelmingly **before** the filters: only 28 of 481 gold entries (6%) are returned by the engine at all (the gold host appears for 92). Whether the other gold pages are dead, moved or simply not retrieved by a claim-text query was not checked (it would need 481 CDX lookups and fetches; not run).
+Reading: of the 28 returned gold entries, 10 were removed as fact-check domains (these 10 entries are only 3 distinct pages; one claim lists the same fact-check page several times; checked in the v5 fact-check run: none of the 3 pages could be recovered) (the annotators themselves used fact-checkers for part of their sources; WD3 ablation) and 3 by robots.txt; every gold entry that was fetched also passed the date filter and reached the top-50. The loss is overwhelmingly **before** the filters: only 28 of 481 gold entries (6%) are returned by the engine at all (the gold host appears for 92). Whether the other gold pages are dead, moved or simply not retrieved by a claim-text query was not checked (it would need 481 CDX lookups and fetches; not run).
 
 ## All returned URLs (1,765)
 | outcome | URLs |

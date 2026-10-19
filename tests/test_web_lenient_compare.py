@@ -26,7 +26,7 @@ LEN = {
 
 def test_consistency_accepts_exactly_the_planned_difference_and_flags_anything_else():
     c = consistency(MAIN, LEN)
-    assert c["inconsistent_claims"] == [] and c["claims_with_date_unknown_main"] == 2
+    assert c["inconsistent_claims"] == [] and c["claims_with_relaxed_url_in_main"] == 2
     assert c["claims_without_added_pages_identical"] == 1 and c["of_those_top50_changed"] == 1
     bad = {**LEN, 2: {"urls": [U("c", None, 1), U("d", None, 1)], "hits": [H("c")]}}          # a dated_after page slipped back in
     assert consistency(MAIN, bad)["inconsistent_claims"] == [2]
@@ -36,7 +36,7 @@ def test_consistency_accepts_exactly_the_planned_difference_and_flags_anything_e
 
 def test_added_funnel_counts_by_hand():
     f = added_funnel(MAIN, LEN)
-    assert f["date_unknown_in_main"] == 2 and f["still_removed_tiny_or_no_text"] == 1 and f["kept_in_lenient"] == 1
+    assert f["relaxed_in_main"] == 2 and f["still_removed_tiny_or_no_text"] == 1 and f["kept_in_lenient"] == 1
     assert f["chunked"] == 1 and f["with_passage_in_top50"] == 1 and f["claims_with_added_page"] == 2
     assert f["claims_with_added_page_in_top50"] == 1 and f["top50_passages_total_lenient"] == 3 and f["top50_passages_from_added"] == 1
     assert f["added_pages_in_top5_claims"] == 1
@@ -64,7 +64,18 @@ def test_a_url_that_is_not_relaxed_is_not_counted_as_kept_and_nan_on_either_side
     main = {**MAIN, 4: {"urls": [U("f", "date_unknown")], "hits": []}}
     lenient = {**LEN, 4: {"urls": [U("f", "date_unknown")], "hits": []}}                         # filter not relaxed
     f = added_funnel(main, lenient)
-    assert f["date_unknown_in_main"] == 3 and f["kept_in_lenient"] == 1
+    assert f["relaxed_in_main"] == 3 and f["kept_in_lenient"] == 1
     m = {1: row(float("nan"), 0.5, True), 2: row(0.5, 0.5, True)}
     l = {1: row(0.5, 0.5, True), 2: row(0.5, 0.5, True)}
     assert paired_table(m, l)["variants"]["primary_all_claims"]["cov_novel"]["n"] == 1
+
+
+def test_funnel_and_consistency_for_the_factcheck_condition_use_the_factcheck_reason():
+    main = {1: {"urls": [U("a", "factcheck"), U("b", "date_unknown"), U("c", None, 1)], "hits": [H("c")]}}
+    fc = {1: {"urls": [U("a", None, 3), U("b", "date_unknown"), U("c", None, 1)], "hits": [H("a"), H("c")]}}
+    assert consistency(main, fc, "factcheck")["inconsistent_claims"] == []
+    assert consistency(main, fc)["inconsistent_claims"] == [1]                 # with the lenient reason, 'a' changing is NOT allowed
+    f = added_funnel(main, fc, "factcheck")
+    assert f["relaxed_in_main"] == 1 and f["kept_in_lenient"] == 1 and f["with_passage_in_top50"] == 1 and f["top50_passages_from_added"] == 1
+    fail = {1: {"urls": [U("a", "fetch_http_403"), U("b", "date_unknown"), U("c", None, 1)], "hits": [H("c")]}}
+    assert added_funnel(main, fail, "factcheck")["still_removed_other"] == 1

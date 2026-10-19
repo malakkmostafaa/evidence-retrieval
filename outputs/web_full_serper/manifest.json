@@ -1,15 +1,14 @@
 {
- "manifest_hash": "d748424cf45aa6b06b1dadfe91a7fee4a8d36b265313d6f67d143eef5909e5e3",
+ "manifest_hash": "95d1f8aef40e1c79810fc76bd02d4d8a9e4de70d8763a9918cfa0dd16354c852",
  "n_network_calls": {
-  "cdx": 1236,
-  "robots": 508,
-  "fetch": 721,
-  "fetch_wayback": 223,
-  "search": 148
+  "cdx": 241,
+  "fetch_wayback": 31,
+  "robots": 52,
+  "fetch": 118
  },
  "mode": "live",
  "provider": "serper/google/serper-search-v1",
- "live_queries_this_invocation": 148,
+ "live_queries_this_invocation": 0,
  "live_queries_total_on_this_machine": 191,
- "last_credits_reported": 1
+ "last_credits_reported": null
 }
