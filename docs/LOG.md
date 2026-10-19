@@ -31,3 +31,6 @@ Three lines per session: tried / happened / next. Failed attempts belong here.
 
 ## 2026-10-20 (relabelling)
 - Tried: report fixes (one unreachable-gold definition, n per table); relabelling design and blinded sheet (50 passages, 43 claims, 17/17/16 dense/BM25/hybrid, full chunk text); scoring script written but not run. Happened: label wording confirmed by Malak. Key file and labels not opened. Next: Malak labels outputs/corpus_v1/relabel/relabel_sheet_TO_LABEL.csv and returns it; then `python scripts/score_relabel.py <file>`.
+
+## 2026-10-20 (own-store removal)
+- Tried: pre-registered and ran the own-store removal evaluation (primary/secondary, frozen-statistics check). Happened: all differences negative, CIs exclude 0; coverage keeps about 70-75% of its normal value; frozen BM25 statistics change aggregates by <= 0.007. Report: docs/reports/own_store_removal.md.
