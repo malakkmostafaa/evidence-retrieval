@@ -237,3 +237,87 @@ def test_a_failing_engine_gives_no_hits_and_a_recorded_error_but_replay_miss_sti
     assert rtool.last_report.search_error.startswith("RecordedFailure: RuntimeError")
     with pytest.raises(ReplayMiss):
         rtool.search_web("a query that was never run", claim_context=CLAIM)
+
+
+def know_terms(tool, *queries):
+    from evret import bm25 as bm
+    for q in queries:
+        for t in bm.tokenize(q):
+            tool.stats.df.setdefault(bm.term_hash(t), 3)
+
+
+URLS_2 = [SearchResult(u, 't', 's', 'fake', i) for i, u in enumerate(URLS[:2], start=1)]
+
+
+class QuoteProv(Prov):
+    """Returns nothing for a query that contains double quotes (as Google does for a long exact phrase), 3 results otherwise."""
+    calls = []
+    empty_is_failure = False                       # like an API: an empty list is a real answer
+
+    def search(self, query, n):
+        QuoteProv.calls.append(query)
+        if "fewer" in query:
+            return URLS_2 if '"' in query else URLS_2[:1]
+        if any(c in query for c in '"\u201c\u201d'):
+            return [] if "zero" in query else [SearchResult("https://news.example/ok-before", "t", "s", "fake", 1)]
+        return [SearchResult(u, "t", "s", "fake", i) for i, u in enumerate(URLS[:3], start=1)]
+
+
+def test_strip_quotes_removes_only_double_quote_characters():
+    from evret.web.tool import strip_quotes
+    assert strip_quotes('He said \u201cit\'s  here\u201d and "now"') == "He said it's here and now"
+    assert strip_quotes("no quotes here") == "no quotes here"
+
+
+def test_quote_fallback_requeries_once_keeps_both_in_the_cache_and_replays(tmp_path):
+    QuoteProv.calls = []
+    tool, _ = build(tmp_path)
+    tool.search.provider = QuoteProv()
+    tool.search.limiter = RateLimiter(0, sleep=lambda s: None)
+    q = 'He said "bike lanes" zero'
+    know_terms(tool, q, "plain query without marks", "zero results but no quote marks", 'off "bike"', 'He said "bike lanes"')
+    tool.search.provider.params                                                                # (touch)
+    hits = tool.search_web(q, claim_context=CLAIM)
+    rep = tool.last_report
+    assert QuoteProv.calls == [q, "He said bike lanes zero"]                                   # exactly one re-query
+    assert rep.fallback == "tried_no_gain" or rep.fallback == "used"
+    q2 = 'He said "bike lanes"'                                                                 # first query: 1 result < 3 -> stripped query: 3 results
+    tool.search_web(q2, claim_context=CLAIM)
+    assert tool.last_report.fallback == "used" and tool.last_report.query_used == "He said bike lanes"
+    assert len(tool.last_report.urls) == 3
+    n = len(QuoteProv.calls)
+    tool.search_web(q2, claim_context=CLAIM)                                                   # both forms are cached: no new query
+    assert len(QuoteProv.calls) == n
+    r = build(tmp_path, mode=Mode.REPLAY)[0]
+    know_terms(r, q2)
+    r.search.provider = QuoteProv()
+    r.search_web(q2, claim_context=CLAIM)
+    assert r.last_report.fallback == "used" and len(QuoteProv.calls) == n                      # replay: same decision, no query
+
+
+def test_no_fallback_when_enough_results_or_no_quotes_or_disabled(tmp_path):
+    QuoteProv.calls = []
+    tool, _ = build(tmp_path)
+    tool.search.provider = QuoteProv()
+    tool.search.limiter = RateLimiter(0, sleep=lambda s: None)
+    know_terms(tool, "plain query without marks", "zero results but no quote marks", 'off "bike"')
+    tool.search_web("plain query without marks", claim_context=CLAIM)
+    assert QuoteProv.calls == ["plain query without marks"] and tool.last_report.fallback == "not_needed"      # 3 results: enough
+    QuoteProv.calls = []
+    tool.search_web("zero results but no quote marks", claim_context=CLAIM)
+    tool.quote_fallback = False
+    tool.search_web('off "bike"', claim_context=CLAIM)
+    assert QuoteProv.calls == ["zero results but no quote marks", 'off "bike"'] and tool.last_report.fallback == "not_needed"
+
+
+def test_fallback_keeps_the_first_answer_when_the_stripped_query_is_not_better(tmp_path):
+    QuoteProv.calls = []
+    tool, _ = build(tmp_path)
+    tool.search.provider = QuoteProv()
+    tool.search.limiter = RateLimiter(0, sleep=lambda s: None)
+    know_terms(tool, 'fewer "x"', "zero results but no quote marks")
+    tool.search_web('fewer "x"', claim_context=CLAIM)
+    assert tool.last_report.fallback == "tried_no_gain" and tool.last_report.query_used == 'fewer "x"' and len(tool.last_report.urls) == 2
+    know_terms(tool, "fewer plain")
+    tool.search_web("fewer plain", claim_context=CLAIM)                           # 1 result, nothing to strip
+    assert tool.last_report.fallback == "not_applicable"

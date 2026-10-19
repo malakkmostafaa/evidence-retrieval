@@ -27,6 +27,13 @@ from evret.web.select import PassageStore, PoolStats, select
 
 STEPS = ("search", "wayback", "fetch", "extract", "chunk", "embed", "select")
 _SNAP_TS = re.compile(r"/web/(\d{14})")
+_DOUBLE_QUOTES = re.compile("[\"“”„‟«»″]")
+FALLBACK_MIN_RESULTS = 3
+
+
+def strip_quotes(q: str) -> str:
+    """Remove double quotation marks (they make Google treat a long quotation as an exact phrase); single quotes/apostrophes stay."""
+    return " ".join(_DOUBLE_QUOTES.sub(" ", q).split())
 
 
 @dataclass
@@ -58,6 +65,8 @@ class QueryReport:
     seconds: dict = field(default_factory=lambda: {s: 0.0 for s in STEPS})
     n_passages: int = 0
     search_error: str = ""
+    query_used: str = ""
+    fallback: str = "not_needed"          # not_needed | used | tried_no_gain | not_applicable
 
     def counts(self) -> dict:
         c: dict = {"returned": len(self.urls)}
@@ -97,9 +106,9 @@ class _Timed:
 
 class WebSearchTool:
     def __init__(self, search: CachedSearch, fetcher: Fetcher, wayback: Wayback, enc, count, stats: PoolStats,
-                 max_pages: int = 10, top_n: int = 50, enc_id: str | None = None):
+                 max_pages: int = 10, top_n: int = 50, enc_id: str | None = None, quote_fallback: bool = True):
         self.search, self.fetcher, self.wayback, self.stats = search, fetcher, wayback, stats
-        self.max_pages, self.top_n = max_pages, top_n
+        self.max_pages, self.top_n, self.quote_fallback = max_pages, top_n, quote_fallback
         self.cache = fetcher.cache
         self._sink = {s: 0.0 for s in STEPS}
         self.enc = _Timed(enc, self._sink)
@@ -128,6 +137,15 @@ class WebSearchTool:
                            (key, e.text, e.kind, e.title, e.pub_date, e.date_source, e.html_date, e.note))
         return e
 
+    def _search_one(self, query: str, rep: "QueryReport") -> list:
+        try:
+            return self.search.search(query)
+        except ReplayMiss:
+            raise
+        except Exception as e:                           # engine blocked / budget / key problem: counted, never cached as 'no results'
+            rep.search_error = f"{type(e).__name__}: {str(e)[:120]}"
+            return []
+
     # ---------------------------------------------------------------------------------------------- the tool
     def search_web(self, query: str, k: int | None = None, filters=None, claim_context: ClaimContext | None = None
                    ) -> list[WebHit]:
@@ -149,13 +167,19 @@ class WebSearchTool:
         self.last_report = rep
 
         with self._t("search"):
-            try:
-                results = self.search.search(query)[: self.max_pages]
-            except ReplayMiss:
-                raise
-            except Exception as e:                       # engine blocked / "No results found" after all retries: not cached, counted
-                rep.search_error = f"{type(e).__name__}: {str(e)[:120]}"
-                results = []
+            results = self._search_one(query, rep)
+            rep.query_used = query
+            if self.quote_fallback and not rep.search_error and len(results) < FALLBACK_MIN_RESULTS:
+                stripped = strip_quotes(query)
+                if stripped == query:
+                    rep.fallback = "not_applicable"
+                else:                                      # one re-query with the quotation marks removed; both answers are cached
+                    again = self._search_one(stripped, rep)
+                    if len(again) > len(results):
+                        results, rep.query_used, rep.fallback = again, stripped, "used"
+                    else:
+                        rep.fallback = "tried_no_gain"
+            results = results[: self.max_pages]
         recs = [UrlRecord(r.url, r.engine_rank, r.engine) for r in results]
         rep.urls = recs
 

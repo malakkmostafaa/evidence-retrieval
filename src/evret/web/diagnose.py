@@ -128,7 +128,7 @@ def gold_funnel(results, claims) -> str:
 
 def main(argv=None):
     d, cache = (argv or sys.argv[1:])[:2]
-    results = json.load(open(os.path.join(d, "results.json")))["results"]
+    results = load_results(d)
     claims = load_smoke_claims()
     rows = search_timeline(os.path.join(cache, "netlog.jsonl"))
     txt = "# Diagnosis of the web smoke run (cached data; 4 extra probe calls to the engine)\n\n" + "\n\n".join(

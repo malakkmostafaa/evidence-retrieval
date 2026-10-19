@@ -10,6 +10,7 @@ import os
 import sys
 from collections import Counter, defaultdict
 
+from evret.web.eval_web import load_results
 from evret.audit import is_factcheck, normalize_url
 from evret.urls import canonical
 
@@ -113,7 +114,7 @@ def manual_review(results) -> str:
 
 def main(argv=None):
     d = (argv or sys.argv[1:])[0]
-    results = json.load(open(os.path.join(d, "results.json")))["results"]
+    results = load_results(d)
     open(os.path.join(d, "summary.md"), "w", encoding="utf-8").write(summary(results))
     open(os.path.join(d, "manual_review.md"), "w", encoding="utf-8").write(manual_review(results))
     print(summary(results))

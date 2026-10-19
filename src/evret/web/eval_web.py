@@ -37,14 +37,16 @@ def iso(d: str) -> str | None:
         return None
 
 
-def load_smoke_claims(dev_path: str = DEV, ranks_path: str | None = None) -> list[dict]:
+def load_smoke_claims(dev_path: str = DEV, ranks_path: str | None = None, which: str = "smoke") -> list[dict]:
     ranks_path = ranks_path or os.path.join(CORPUS, "ranks.json")
     ranks = {int(k): v for k, v in json.load(open(ranks_path, encoding="utf-8")).items()}
     raw = json.load(open(dev_path, encoding="utf-8"))
     by_rank = {r: c for c, r in ranks.items()}
     dev = load_dev(dev_path)
     out = []
-    for group, rr in (("pooled", POOLED_RANKS), ("held-out", HELD_OUT_RANKS)):
+    groups = (("pooled", POOLED_RANKS), ("held-out", HELD_OUT_RANKS)) if which == "smoke" else (
+        ("pooled", range(0, 180)), ("held-out", range(180, 300)))
+    for group, rr in groups:
         for r in rr:
             cid = by_rank[r]
             c, rw = dev[cid], raw[cid]
@@ -79,7 +81,8 @@ def score_claim(claim: dict, tool, cond: str) -> dict:
     return {"claim_id": claim["claim_id"], "rank": claim["rank"], "group": claim["group"], "label": claim["label"],
             "cond": cond, "claim_date": claim["claim_date"], "n_gold": len(gv), "wall_s": round(wall, 2),
             "seconds": {k: round(v, 2) for k, v in rep.seconds.items()}, "counts": rep.counts(),
-            "n_passages": rep.n_passages, "search_error": rep.search_error,
+            "n_passages": rep.n_passages, "search_error": rep.search_error, "query_used": rep.query_used,
+            "fallback": rep.fallback,
             "gold": {"in_results": gold_in(results), "in_fetched": gold_in(fetched), "in_kept": gold_in(kept),
                      "in_top5": gold_in([h.url for h in hits[:5]]), "in_top10": gold_in([h.url for h in hits[:10]]),
                      "in_top50": gold_in([h.url for h in hits[:50]]), "gold_fate": {str(k): v for k, v in gold_removed.items()}},
@@ -140,6 +143,21 @@ def build_tool(cache_dir: str, replay: bool, corpus: str = CORPUS, provider: str
     return tool, netlog, prov
 
 
+def load_results(d: str, replay: bool = False) -> list[dict]:
+    """results.json (smoke) or results.jsonl (full run; the LAST line of a (condition, claim) wins)."""
+    name = "results_replay" if replay else "results"
+    if os.path.exists(os.path.join(d, name + ".json")):
+        return json.load(open(os.path.join(d, name + ".json")))["results"]
+    last = {}
+    path = os.path.join(d, name + ".jsonl")
+    if os.path.exists(path):
+        for line in open(path, encoding="utf-8"):
+            if line.strip():
+                r = json.loads(line)
+                last[(r["cond"], r["claim_id"])] = r
+    return list(last.values())
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default="outputs/web_smoke")
@@ -148,14 +166,16 @@ def main(argv=None):
     ap.add_argument("--provider", choices=["serper", "ddgs"], required=True, help="serper = evaluation runs; ddgs = development only")
     ap.add_argument("--conds", default="main,lenient,factcheck")
     ap.add_argument("--limit", type=int, default=None)
+    ap.add_argument("--claims", choices=["smoke", "all"], default="smoke", help="smoke = 15 claims, all = the 300 ranked claims (JSONL output)")
     ap.add_argument("--resume", action="store_true", help="keep results already in results.json (their timings stay cold)")
     a = ap.parse_args(argv)
     os.makedirs(a.out, exist_ok=True)
-    claims = load_smoke_claims()[: a.limit]
+    claims = load_smoke_claims(which=a.claims)[: a.limit]
     tool, netlog, prov = build_tool(a.cache, a.replay, provider=a.provider)
     q0 = prov.budget.used() if hasattr(prov, "budget") else None
-    path = os.path.join(a.out, "results_replay.json" if a.replay else "results.json")
-    results = json.load(open(path))["results"] if a.resume and os.path.exists(path) else []
+    full = a.claims == "all"
+    path = os.path.join(a.out, ("results_replay" if a.replay else "results") + (".jsonl" if full else ".json"))
+    results = load_results(a.out, a.replay) if a.resume else []
     if a.resume:                                   # a failed search is redone; successful claims keep their (cold) timings
         results = [r for r in results if not r.get("search_error") and r["counts"]["returned"] > 0]
     done = {(r["cond"], r["claim_id"]) for r in results}
@@ -166,8 +186,12 @@ def main(argv=None):
             r = score_claim(c, tool, cond)
             results.append(r)
             print(f"[{cond}] claim {c['claim_id']:>3} ({c['group']}) {r['wall_s']:6.1f}s kept={r['counts']['kept']} "
-                  f"passages={r['n_passages']} gold_top50={r['gold']['in_top50']} of {r['n_gold']}", flush=True)
-            json.dump({"results": results, "stats": tool.stats.freeze()}, open(path, "w"), indent=1)
+                  f"passages={r['n_passages']} fb={r['fallback']} gold_top50={r['gold']['in_top50']} of {r['n_gold']}", flush=True)
+            if full:
+                with open(path, "a", encoding="utf-8") as f:
+                    f.write(json.dumps(r) + "\n")
+            else:
+                json.dump({"results": results, "stats": tool.stats.freeze()}, open(path, "w"), indent=1)
     json.dump(tool.stats.freeze(), open(os.path.join(a.cache, "pool_stats.json"), "w"))
     manifest = {"manifest_hash": tool.manifest_hash(), "n_network_calls": Counter(r["kind"] for r in netlog.records),
                 "mode": "replay" if a.replay else "live", "provider": f"{prov.name}/{prov.backend}/{prov.version}"}
