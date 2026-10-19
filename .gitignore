@@ -6,5 +6,18 @@ __pycache__/
 outputs/**/*.csv.gz
 .pytest_cache/
 logs/
-outputs/web_cache/
-outputs/web_full_serper/results*.jsonl
+
+# web tool: frozen caches (search results, page blobs, SQLite, net logs) are re-creatable snapshots, large, and third-party content
+outputs/web_cache*/
+*.sqlite
+outputs/**/netlog.jsonl
+
+# web tool: raw per-claim results and run logs (summaries, reports and manifests stay tracked)
+outputs/web_*/results*.jsonl
+outputs/web_*/*.log
+outputs/web_*/logs/
+
+# secrets and local budget counter must never be committed
+.env
+*.key
+.evret/
