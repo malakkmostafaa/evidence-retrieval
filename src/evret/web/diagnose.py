@@ -14,6 +14,7 @@ from collections import Counter
 from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 
 from evret.urls import canonical, unwrap
+from evret.web.eval_web import load_results
 from evret.web.eval_web import DEV, load_smoke_claims
 
 TOK = re.compile(r"[a-z0-9]+")
@@ -129,7 +130,7 @@ def gold_funnel(results, claims) -> str:
 def main(argv=None):
     d, cache = (argv or sys.argv[1:])[:2]
     results = load_results(d)
-    claims = load_smoke_claims()
+    claims = load_smoke_claims(which="pool" if len(results) > 40 else "smoke")
     rows = search_timeline(os.path.join(cache, "netlog.jsonl"))
     txt = "# Diagnosis of the web smoke run (cached data; 4 extra probe calls to the engine)\n\n" + "\n\n".join(
         [failure_section(rows, json.load(open(os.path.join(cache, "provider.json")))["provider"] if os.path.exists(os.path.join(cache, "provider.json")) else "ddgs/duckduckgo"), gold_funnel(results, claims)])

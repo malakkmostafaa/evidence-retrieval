@@ -1,0 +1,9 @@
+{
+ "manifest_hash": "89dcc8848b98f117b04c4fc50d4fe26046ea4227d1cab5146dc7d9e80fd8113f",
+ "n_network_calls": {},
+ "mode": "replay",
+ "provider": "serper/google/serper-search-v1",
+ "live_queries_this_invocation": 0,
+ "live_queries_total_on_this_machine": 191,
+ "last_credits_reported": null
+}

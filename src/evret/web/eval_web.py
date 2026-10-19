@@ -172,6 +172,7 @@ def main(argv=None):
     ap.add_argument("--conds", default="main,lenient,factcheck")
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--claims", choices=["smoke", "pool", "all"], default="smoke", help="smoke = 15 claims, pool = the 180 pool claims (bands 0-5), all = 300 (needs approval); pool/all write JSONL")
+    ap.add_argument("--stats-only", action="store_true", help="only freeze the pool df of all claim queries (reads the local BM25 index, no network, no model)")
     ap.add_argument("--threads", type=int, default=3, help="CPU threads for the embedding model (keep low while the GPU job runs)")
     ap.add_argument("--resume", action="store_true", help="keep results already in results.json (their timings stay cold)")
     a = ap.parse_args(argv)
@@ -181,6 +182,16 @@ def main(argv=None):
     torch.set_num_threads(a.threads)
     tool, netlog, prov = build_tool(a.cache, a.replay, provider=a.provider)
     q0 = prov.budget.used() if hasattr(prov, "budget") else None
+    stats_path = os.path.join(a.cache, "pool_stats.json")
+    if not a.replay:                               # df of every claim query comes from the local index: freeze them all up front
+        from evret import bm25 as bm
+        for c in claims:
+            for t in {bm.term_hash(t) for t in bm.tokenize(c["text"])}:
+                tool.stats.idf(t)
+        json.dump(tool.stats.freeze(), open(stats_path, "w"))
+    if a.stats_only:
+        print("frozen df terms:", len(tool.stats.df))
+        return
     full = a.claims in ("pool", "all")
     path = os.path.join(a.out, ("results_replay" if a.replay else "results") + (".jsonl" if full else ".json"))
     results = load_results(a.out, a.replay) if a.resume else []
@@ -195,6 +206,7 @@ def main(argv=None):
             results.append(r)
             print(f"[{cond}] claim {c['claim_id']:>3} ({c['group']}) {r['wall_s']:6.1f}s kept={r['counts']['kept']} "
                   f"passages={r['n_passages']} fb={r['fallback']} gold_top50={r['gold']['in_top50']} of {r['n_gold']}", flush=True)
+            json.dump(tool.stats.freeze(), open(stats_path, "w"))        # keep the frozen statistics current (a killed run must not lose them)
             if full:
                 with open(path, "a", encoding="utf-8") as f:
                     f.write(json.dumps(r) + "\n")

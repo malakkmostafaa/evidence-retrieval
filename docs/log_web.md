@@ -35,3 +35,8 @@
 - Tried: SerperProvider (env key, persisted query budget 1500/2300, 4xx not retried, empty answer cached, autocorrect off), provider lock per cache directory; live smoke run on the same 15 claims; replay.
 - Happened: 15 live queries (15 of 2,500 used); replay = identical, 0 queries; 1 distinct gold page returned (claim 418) and it reaches the top-5; kept 31% of URLs; 29 s per claim; 3 claims with quotation marks gave 0-4 results. Removed my own coverage proxy from the diagnosis on request (to be re-added with the ported original). Failed attempts: none in the run; mutation check found one unguarded line (num > 10) and a test was added.
 - Next: Malak decides WQ8 (quotation marks); then 300-claim run (300 queries).
+
+## 2026-10-19 (pool main run)
+- Tried: quotation-mark fallback, pool-only claim list (ranks 0-179), main condition with Serper on 3 CPU threads, replay check.
+- Happened: 180/180 claims searched (148 new queries, 191 total used), 2 fallbacks, 24% of URLs kept, 11 claims with a gold page in the top-50, 31.6 s per claim. Failed attempt: replay raised KeyError because the frozen df were written only at the end of a run and the stopped run had not written them -> now frozen up front and after every claim; replay then identical.
+- Next: wait for approval for lenient / fact-check conditions.
