@@ -33,6 +33,7 @@ ANCHOR_WINDOW = 200
 ANCHOR_THETA = 0.8
 
 # ------------------------------------------------------------------------------------------ text (legacy text.py)
+_SURROGATE = re.compile("[" + chr(0xD800) + "-" + chr(0xDFFF) + "]")
 _TOKEN = re.compile(r"[^\W_]+", re.UNICODE)
 STOPWORDS = frozenset("""a an the and or but if of to in on at by for with from as is are was were be been being it its
 this that these those he she they we you i his her their our your not no do does did have has had will would can could
@@ -118,6 +119,11 @@ class Passage:
         if self._set is None:
             self._set = frozenset(content_tokens(self.text))
         return self._set
+
+
+def clean_for_tokenizer(s: str) -> str:
+    """Lone surrogates cannot be encoded by the tokenizer; replace them by U+FFFD (same length, offsets unchanged)."""
+    return s if s.isascii() else _SURROGATE.sub("�", s)
 
 
 def passage_from_hit(hit, count_tokens) -> Passage:

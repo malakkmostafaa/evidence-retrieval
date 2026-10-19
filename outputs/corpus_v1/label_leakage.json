@@ -1,0 +1,638 @@
+[
+ {
+  "row": 0,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 1,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 2,
+  "status": "matched",
+  "urls": [
+   "https://www.imdb.com/title/tt3513548/characters/nm0000870"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 3,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 4,
+  "status": "matched",
+  "urls": [
+   "https://ballotpedia.org/California_gubernatorial_election,_2018"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 5,
+  "status": "matched",
+  "urls": [
+   "https://sundayguardianlive.com/news/9743-subsidised-coaching-ensures-muslim-students-success"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 6,
+  "status": "matched",
+  "urls": [
+   "https://worldpopulationreview.com/countries/nigeria-population"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 7,
+  "status": "matched",
+  "urls": [
+   "https://www.cnn.com/2020/08/26/politics/republican-national-convention-third-night-fact-check/index.html"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 8,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 9,
+  "status": "matched",
+  "urls": [
+   "https://ballotpedia.org/California_gubernatorial_election,_2018",
+   "https://ballotpedia.org/Florida%27s_27th_Congressional_District_election,_2018",
+   "https://ballotpedia.org/Kentucky_gubernatorial_and_lieutenant_gubernatorial_election,_2019",
+   "https://ballotpedia.org/Virginia_House_of_Delegates_elections,_2019"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 10,
+  "status": "matched",
+  "urls": [
+   "https://www.washingtonexaminer.com/opinion/1430124/why-latest-findings-on-putins-use-of-nerve-agent-against-alexei-navalny-are-so-crucial/"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 11,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 12,
+  "status": "matched",
+  "urls": [
+   "https://www.shouselaw.com/ca/defense/penal-code/288-4/"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 13,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 14,
+  "status": "matched",
+  "urls": [
+   "https://www.rmets.org/metmatters/ophelia-and-red-sky"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 15,
+  "status": "matched",
+  "urls": [
+   "https://chahalacademy.com/best-ias-coaching-in-delhi"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 16,
+  "status": "matched",
+  "urls": [
+   "https://www.sbs.com.au/news/article/skies-turn-to-red-as-soaring-temperatures-fan-bushfires-in-nsw-and-victoria/18oimpbzh"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 17,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 18,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 19,
+  "status": "matched",
+  "urls": [
+   "https://www.dailymail.co.uk/news/jacob-blake/index.html",
+   "https://www.dailymail.co.uk/news/kyle-rittenhouse/index.html?page=2"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 20,
+  "status": "matched",
+  "urls": [
+   "https://www.gravitispetsupplies.co.uk/blogs/blog/financial-support-for-dog-groomers-during-covid-19"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 21,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 22,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 23,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 24,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 25,
+  "status": "matched",
+  "urls": [
+   "https://www.howtopronounce.com/sturgis"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 26,
+  "status": "matched",
+  "urls": [
+   "https://www.usatoday.com/story/news/politics/elections/2019/07/09/joe-biden-made-15-million-obama-administration/1686674001/"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 27,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 28,
+  "status": "matched",
+  "urls": [
+   "https://www.thelpa.com/lpa/forum-thread/304576/Just-signed-lease-with-sex-offender.html"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 29,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 30,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 31,
+  "status": "matched",
+  "urls": [
+   "https://medium.com/@JoeBiden/the-biden-agenda-for-women-d4055e41822f"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 32,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 33,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 34,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 35,
+  "status": "matched",
+  "urls": [
+   "https://go.kompas.com/read/2020/09/17/171300274/alexei-navalny-poisoning-case-now-involves-global-chemical-weapons-watchdog"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 36,
+  "status": "matched",
+  "urls": [
+   "https://www.eac.gov/sites/default/files/document_library/files/Recommendations-to-the-Presidential-Commission-on-Election-Administration.pdf"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 37,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 38,
+  "status": "matched",
+  "urls": [
+   "https://chahalacademy.com/best-ias-coaching-in-delhi"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 39,
+  "status": "matched",
+  "urls": [
+   "https://www.latimes.com/entertainment-arts/business/story/2020-08-26/melania-trump-gives-republican-convention-ratings-boost"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 40,
+  "status": "matched",
+  "urls": [
+   "https://www.davisvanguard.org/2020/09/ca-governor-signs-bill-ending-discrimination-against-young-lgbtq-on-sex-offender-registry/"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 41,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 42,
+  "status": "matched",
+  "urls": [
+   "https://insightcrime.org/news/brief/have-the-knight-templar-diversified-into-organ-trafficking/"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 43,
+  "status": "matched",
+  "urls": [
+   "https://www.nairaland.com/4271845/fuel-cheaper-nigeria-than-saudi"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 44,
+  "status": "unmatched",
+  "urls": [],
+  "own_article": false
+ },
+ {
+  "row": 45,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 46,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 47,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 48,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 49,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 50,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 51,
+  "status": "matched",
+  "urls": [
+   "https://apo.org.au/node/305732",
+   "https://www.abc.net.au/news/2018-03-20/fact-check-flora-and-fauna-1967-referendum/9550650"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 52,
+  "status": "matched",
+  "urls": [
+   "https://ssir.org/articles/entry/the_secret_of_scale"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 53,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 54,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 55,
+  "status": "unmatched",
+  "urls": [],
+  "own_article": false
+ },
+ {
+  "row": 56,
+  "status": "matched",
+  "urls": [
+   "https://undergradjournal.history.ucsb.edu/wp-content/uploads/2021/11/1.2.Fall_.2021.pdf"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 57,
+  "status": "matched",
+  "urls": [
+   "https://www.globalcitizen.org/en/content/facts-to-know-about-nigeria-independence/"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 58,
+  "status": "matched",
+  "urls": [
+   "https://worldpopulationreview.com/countries/nigeria-population"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 59,
+  "status": "matched",
+  "urls": [
+   "https://www.indiatoday.in/sports/football/story/paul-pogba-manchester-united-french-midfielder-islam-terrorism-comment-emmanuel-macron-1735288-2020-10-26"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 60,
+  "status": "matched",
+  "urls": [
+   "https://economictimes.indiatimes.com/news/mark-zuckerberg"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 61,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 62,
+  "status": "matched",
+  "urls": [
+   "https://ballotpedia.org/Do_absentee/mail-in_ballots_take_longer_to_count_than_in-person_ballots%3F_(2020)"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 63,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 64,
+  "status": "matched",
+  "urls": [
+   "https://whyy.org/articles/watch-live-2020-republican-national-convention-night-three/",
+   "https://www.dispatch.com/story/news/politics/elections/2020/08/27/pence-defends-police-at-convention-amid-rising-race-tension/113588240/",
+   "https://www.mercurynews.com/2020/08/26/pence-defends-police-at-convention-amid-rising-race-tension/",
+   "https://www.wsls.com/news/politics/2020/08/26/fighting-for-you-first-lady-makes-her-case-for-trump-vote/"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 65,
+  "status": "matched",
+  "urls": [
+   "https://www.golfdigest.com/story/pga-tour-officials-breathe-easier-after-provision-to-strip-tours-tax-exempt-status-is-removed-at-last-minute-from-senate-bill"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 66,
+  "status": "matched",
+  "urls": [
+   "https://www.forbes.com/sites/bradadgate/2020/07/21/this-year-the-political-conventions-like-no-other/"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 67,
+  "status": "matched",
+  "urls": [
+   "https://www.bbc.com/news/54630551"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 68,
+  "status": "matched",
+  "urls": [
+   "http://staging.catchnews.com/india-news/when-ex-pm-lal-bahadur-shastri-took-loan-from-pnb-his-widow-paid-it-back-100134.html",
+   "https://www.catchnews.com/india-news/when-ex-pm-lal-bahadur-shastri-took-loan-from-pnb-his-widow-paid-it-back-100134.html"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 69,
+  "status": "matched",
+  "urls": [
+   "https://www.justice.gov/psc/docs/natstrategyreport.pdf"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 70,
+  "status": "matched",
+  "urls": [
+   "https://press.foxnews.com/",
+   "https://press.foxnews.com/2020/06/fox-news-media-expands-broadcast-partnership-with-siriusxm-and-pandora",
+   "https://www.linkedin.com/company/fox-news-channel",
+   "https://www.wayup.com/i-Broadcast-Media-j-Spring-2023-FOX-News-Media-College-Associate-Program-FOX-Corporation-759079004308247/"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 71,
+  "status": "matched",
+  "urls": [
+   "https://www.sbs.com.au/news/article/skies-turn-to-red-as-soaring-temperatures-fan-bushfires-in-nsw-and-victoria/18oimpbzh"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 72,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 73,
+  "status": "matched",
+  "urls": [
+   "https://rollcall.com/2020/08/27/rnc-fact-check-pence-distorts-bidens-positions/"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 74,
+  "status": "matched",
+  "urls": [
+   "https://www.distractify.com/p/did-kamala-harris-fail-the-bar-exam"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 75,
+  "status": "matched",
+  "urls": [
+   "https://www.firstpost.com/india/waqf-board-properties-to-be-geotagged-centre-to-provide-free-upsc-coaching-to-muslim-girls-says-mukhtar-abbas-naqvi-6807261.html"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 76,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 77,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 78,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 79,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 80,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 81,
+  "status": "matched",
+  "urls": [
+   "https://www.cleveland.com/election/2020/08/how-kamala-harris-vice-president-bid-can-help-bring-out-black-girl-magic-to-girls-and-young-women-in-cleveland.html"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 82,
+  "status": "matched",
+  "urls": [
+   "https://www.financialsamurai.com/joe-biden-net-worth-and-income/"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 83,
+  "status": "matched",
+  "urls": [
+   "https://www.imdb.com/name/nm0309540/"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 84,
+  "status": "matched",
+  "urls": [
+   "https://www.aclusocal.org/en/vote2020"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 85,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 86,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 87,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 88,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 89,
+  "status": "matched",
+  "urls": [
+   "https://www.historyvshollywood.com/reelfaces/richard-jewell/"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 90,
+  "status": "matched",
+  "urls": [
+   "https://oig.justice.gov/reports/plus/e0901/results.htm"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 91,
+  "status": "matched",
+  "urls": [
+   "https://www.historyvshollywood.com/reelfaces/richard-jewell/"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 92,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 93,
+  "status": "matched",
+  "urls": [
+   "https://www.historyvshollywood.com/reelfaces/richard-jewell/"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 94,
+  "status": "matched",
+  "urls": [
+   "https://abcnews.go.com/Politics/joe-jill-biden-reported-earning-15-million-income/story?id=64225419"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 95,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 96,
+  "status": "matched",
+  "urls": [
+   "https://worldpopulationreview.com/countries/nigeria-population"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 97,
+  "status": "sealed_claim_not_matchable"
+ },
+ {
+  "row": 98,
+  "status": "matched",
+  "urls": [
+   "https://law.lclark.edu/student_life/bar-exam-support-resources/"
+  ],
+  "own_article": false
+ },
+ {
+  "row": 99,
+  "status": "matched",
+  "urls": [
+   "https://www.vanityfair.com/hollywood/2019/12/richard-jewell-movie-kathy-scruggs"
+  ],
+  "own_article": false
+ }
+]

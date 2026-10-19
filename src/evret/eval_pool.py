@@ -20,6 +20,7 @@ import time
 import numpy as np
 import psutil
 
+from evret import metrics_cov as mc
 from evret.audit import load_dev
 from evret.urls import url_variants
 
@@ -41,8 +42,8 @@ def load_claims(dev_path: str, ranks_path: str, band_size: int, finished_bands: 
             excl |= url_variants(r.get(field) or "")
         gold = [url_variants(u) for u in c["gold_urls"] if u]
         out.append({"claim_id": cid, "rank": ranks[cid], "band": ranks[cid] // band_size, "text": r["claim"],
-                    "label": r["label"], "gold_urls": c["gold_urls"], "gold_variants": gold,
-                    "exclude": frozenset(excl)})
+                    "label": r["label"], "gold_urls": c["gold_urls"], "raw_gold_urls": c["gold_urls"], "gold_variants": gold,
+                    "exclude": frozenset(excl), "raw": r})
     out.sort(key=lambda x: x["rank"])
     return out
 
@@ -109,7 +110,45 @@ def bootstrap(per_claim: dict, names: list[str], n_boot: int = 10000, seed: int 
     return out
 
 
-def evaluate(corpus, retrievers: dict, claims: list[dict], pool_docs: int, log=print) -> dict:
+COV_BUDGET = 512
+
+
+def make_token_fns():
+    """(count_tokens, offsets_fn) from the BGE tokenizer, WITHOUT special tokens (as in the legacy code)."""
+    from tokenizers import Tokenizer
+    from evret.embed import snapshot_dir
+    tok = Tokenizer.from_file(os.path.join(snapshot_dir(), "tokenizer.json"))
+    tok.no_truncation()
+    return (lambda t: len(tok.encode(mc.clean_for_tokenizer(t), add_special_tokens=False).ids),
+            lambda t: tok.encode(mc.clean_for_tokenizer(t), add_special_tokens=False).offsets)
+
+
+def anchored_answers(corpus_root: str, claims: list[dict]) -> dict:
+    """claim_id -> anchored gold answers (legacy rule: scorable and found in a 200-token window of the cited page)."""
+    from evret.eval_labels import page_texts
+    urls = {a["url"] for c in claims for a in mc.gold_answers(c["raw"]) if a["url"]}
+    texts = page_texts(corpus_root, urls)
+    return {c["claim_id"]: [a for a in mc.anchor_claim(c["raw"], texts) if a["anchored"]] for c in claims}
+
+
+def coverage(claims, hits_by_claim, anchored, budget=COV_BUDGET, ks=(5, 10)) -> dict:
+    """Per-claim legacy metrics (CovNovel@B, CovUnion@B, AnswerRecall@k, SourceHit/MRR on the ranked chunks) for the claims
+    that have >= 1 anchored answer. Returns {metric: array over eligible claims}, plus the eligible claim ids."""
+    count, offs = make_token_fns()
+    rows, ids = [], []
+    for c, hits in zip(claims, hits_by_claim):
+        ans = anchored[c["claim_id"]]
+        if not ans:
+            continue
+        ranked = [mc.passage_from_hit(h, count) for h in hits]
+        rows.append(mc.claim_row(ans, mc.gold_keys(c["raw_gold_urls"]), ranked, budget, ks, offs,
+                                 claim_tokens=frozenset(mc.content_tokens(c["text"]))))
+        ids.append(c["claim_id"])
+    keys = rows[0].keys() if rows else []
+    return {"claim_ids": ids, **{k: np.array([r[k] for r in rows], float) for k in keys}}
+
+
+def evaluate(corpus, retrievers: dict, claims: list[dict], pool_docs: int, corpus_root: str, log=print) -> dict:
     from evret.search import Filters
     res = {"n_claims": len(claims), "variants": {}}
     reach = [reachable_flags(corpus, c) for c in claims]
@@ -124,6 +163,9 @@ def evaluate(corpus, retrievers: dict, claims: list[dict], pool_docs: int, log=p
     leaks = {"sealed_or_unknown_doc_returned": 0, "own_article_returned": 0, "hits_checked": 0}
     store = {}
     per = {}
+    anchored = anchored_answers(corpus_root, claims)
+    res["coverage_eligible_claims"] = sum(bool(v) for v in anchored.values())
+    cov_all = {}
     for vname, flags in (("default (fact-check excluded)", frozenset({"factcheck", "tiny"})),
                          ("ablation (fact-check included)", frozenset({"tiny"}))):
         res["variants"][vname] = {}
@@ -133,6 +175,7 @@ def evaluate(corpus, retrievers: dict, claims: list[dict], pool_docs: int, log=p
             hits = ret.search_batch([c["text"] for c in claims], max(K_LIST), filters)
             dt = time.time() - t0
             store[(vname, rname)] = hits
+            cov_all[(vname, rname)] = coverage(claims, hits, anchored)
             row = {"seconds_batch": round(dt, 2), "ms_per_query_batch": round(1000 * dt / len(claims), 1)}
             for k in K_LIST:
                 anyk, recall, anyk_r, recall_r = [], [], [], []
@@ -158,6 +201,15 @@ def evaluate(corpus, retrievers: dict, claims: list[dict], pool_docs: int, log=p
                     leaks["own_article_returned"] += hit_matches(x.url, set(c["exclude"]))
             log(f"  {vname} / {rname}: {row}")
     res["reachable_claims"] = n_reach_claims
+    res["coverage"] = {}
+    B = COV_BUDGET
+    for vname in res["variants"]:
+        for metric in (f"cov_novel@B{B}", f"cov_union@B{B}", "answer_recall@10", f"cov_novel@10", "source_hit@10"):
+            arrs = {r: cov_all[(vname, r)][metric] for r in retrievers}
+            ok = ~np.isnan(np.vstack(list(arrs.values()))).any(0)
+            if ok.sum() < 2:
+                continue
+            res["coverage"][f"{vname} | {metric}"] = {"n_claims": int(ok.sum()), **bootstrap({r: a[ok] for r, a in arrs.items()}, list(retrievers))}
     mask = np.array([any(r) for r in reach])
     res["bootstrap_reachable_claims"] = {}
     for vname in res["variants"]:
@@ -217,7 +269,7 @@ def main(argv=None):
             r.search(c["text"], 10, sr.Filters(exclude_norm_urls=c["exclude"]))
             ts.append(time.time() - t0)
         lat[rname] = {"ms_per_query_single_median": round(1000 * float(np.median(ts)), 1)}
-    res, store = evaluate(corpus, rets, claims, pool_docs)
+    res, store = evaluate(corpus, rets, claims, pool_docs, a.corpus)
     res["latency"] = lat
     import shutil
     res["free_disk_gb"] = round(shutil.disk_usage(a.corpus).free / 1e9, 1)

@@ -3,8 +3,8 @@
  "variants": {
   "default (fact-check excluded)": {
    "dense": {
-    "seconds_batch": 2.18,
-    "ms_per_query_batch": 36.3,
+    "seconds_batch": 2.5,
+    "ms_per_query_batch": 41.7,
     "SourceHit@10_reachable_claims": 0.25,
     "GoldRecall@10_reachable_claims": 0.1525,
     "SourceHit@10_all_claims": 0.2,
@@ -13,8 +13,8 @@
     "SourceHit@50_all_claims": 0.35
    },
    "bm25": {
-    "seconds_batch": 17.82,
-    "ms_per_query_batch": 297.0,
+    "seconds_batch": 19.57,
+    "ms_per_query_batch": 326.2,
     "SourceHit@10_reachable_claims": 0.1667,
     "GoldRecall@10_reachable_claims": 0.1181,
     "SourceHit@10_all_claims": 0.1333,
@@ -23,8 +23,8 @@
     "SourceHit@50_all_claims": 0.2667
    },
    "hybrid": {
-    "seconds_batch": 16.56,
-    "ms_per_query_batch": 275.9,
+    "seconds_batch": 18.13,
+    "ms_per_query_batch": 302.2,
     "SourceHit@10_reachable_claims": 0.2292,
     "GoldRecall@10_reachable_claims": 0.1597,
     "SourceHit@10_all_claims": 0.1833,
@@ -35,8 +35,8 @@
   },
   "ablation (fact-check included)": {
    "dense": {
-    "seconds_batch": 1.72,
-    "ms_per_query_batch": 28.6,
+    "seconds_batch": 2.01,
+    "ms_per_query_batch": 33.5,
     "SourceHit@10_reachable_claims": 0.25,
     "GoldRecall@10_reachable_claims": 0.1525,
     "SourceHit@10_all_claims": 0.2167,
@@ -45,8 +45,8 @@
     "SourceHit@50_all_claims": 0.35
    },
    "bm25": {
-    "seconds_batch": 14.22,
-    "ms_per_query_batch": 237.1,
+    "seconds_batch": 18.43,
+    "ms_per_query_batch": 307.1,
     "SourceHit@10_reachable_claims": 0.1667,
     "GoldRecall@10_reachable_claims": 0.1181,
     "SourceHit@10_all_claims": 0.1333,
@@ -55,8 +55,8 @@
     "SourceHit@50_all_claims": 0.2833
    },
    "hybrid": {
-    "seconds_batch": 15.81,
-    "ms_per_query_batch": 263.5,
+    "seconds_batch": 21.43,
+    "ms_per_query_batch": 357.2,
     "SourceHit@10_reachable_claims": 0.1875,
     "GoldRecall@10_reachable_claims": 0.1285,
     "SourceHit@10_all_claims": 0.1667,
@@ -78,7 +78,490 @@
   "claims_with_reachable_gold": 48,
   "claims_without_gold_url": 0
  },
+ "coverage_eligible_claims": 33,
  "reachable_claims": 48,
+ "coverage": {
+  "default (fact-check excluded) | cov_novel@B512": {
+   "n_claims": 31,
+   "mean": {
+    "dense": 0.3447,
+    "bm25": 0.2839,
+    "hybrid": 0.298
+   },
+   "ci95": {
+    "dense": [
+     0.2527,
+     0.444
+    ],
+    "bm25": [
+     0.2092,
+     0.3681
+    ],
+    "hybrid": [
+     0.2243,
+     0.3813
+    ]
+   },
+   "paired_diff": {
+    "dense - bm25": {
+     "mean": 0.0608,
+     "ci95": [
+      -0.0434,
+      0.1632
+     ],
+     "excludes_zero": false
+    },
+    "dense - hybrid": {
+     "mean": 0.0467,
+     "ci95": [
+      -0.0158,
+      0.1229
+     ],
+     "excludes_zero": false
+    },
+    "bm25 - hybrid": {
+     "mean": -0.0141,
+     "ci95": [
+      -0.0902,
+      0.0634
+     ],
+     "excludes_zero": false
+    }
+   }
+  },
+  "default (fact-check excluded) | cov_union@B512": {
+   "n_claims": 33,
+   "mean": {
+    "dense": 0.4054,
+    "bm25": 0.3595,
+    "hybrid": 0.3681
+   },
+   "ci95": {
+    "dense": [
+     0.32,
+     0.4941
+    ],
+    "bm25": [
+     0.2893,
+     0.4385
+    ],
+    "hybrid": [
+     0.2952,
+     0.4463
+    ]
+   },
+   "paired_diff": {
+    "dense - bm25": {
+     "mean": 0.0459,
+     "ci95": [
+      -0.0414,
+      0.1315
+     ],
+     "excludes_zero": false
+    },
+    "dense - hybrid": {
+     "mean": 0.0374,
+     "ci95": [
+      -0.0125,
+      0.0981
+     ],
+     "excludes_zero": false
+    },
+    "bm25 - hybrid": {
+     "mean": -0.0085,
+     "ci95": [
+      -0.0747,
+      0.0609
+     ],
+     "excludes_zero": false
+    }
+   }
+  },
+  "default (fact-check excluded) | answer_recall@10": {
+   "n_claims": 33,
+   "mean": {
+    "dense": 0.2131,
+    "bm25": 0.1751,
+    "hybrid": 0.2003
+   },
+   "ci95": {
+    "dense": [
+     0.098,
+     0.3384
+    ],
+    "bm25": [
+     0.0606,
+     0.3098
+    ],
+    "hybrid": [
+     0.0808,
+     0.3367
+    ]
+   },
+   "paired_diff": {
+    "dense - bm25": {
+     "mean": 0.038,
+     "ci95": [
+      -0.0697,
+      0.1441
+     ],
+     "excludes_zero": false
+    },
+    "dense - hybrid": {
+     "mean": 0.0128,
+     "ci95": [
+      -0.0848,
+      0.1111
+     ],
+     "excludes_zero": false
+    },
+    "bm25 - hybrid": {
+     "mean": -0.0253,
+     "ci95": [
+      -0.0657,
+      0.0
+     ],
+     "excludes_zero": false
+    }
+   }
+  },
+  "default (fact-check excluded) | cov_novel@10": {
+   "n_claims": 31,
+   "mean": {
+    "dense": 0.6418,
+    "bm25": 0.5767,
+    "hybrid": 0.5903
+   },
+   "ci95": {
+    "dense": [
+     0.5541,
+     0.7242
+    ],
+    "bm25": [
+     0.4943,
+     0.6587
+    ],
+    "hybrid": [
+     0.5086,
+     0.6703
+    ]
+   },
+   "paired_diff": {
+    "dense - bm25": {
+     "mean": 0.0651,
+     "ci95": [
+      -0.0011,
+      0.1317
+     ],
+     "excludes_zero": false
+    },
+    "dense - hybrid": {
+     "mean": 0.0515,
+     "ci95": [
+      0.0125,
+      0.0927
+     ],
+     "excludes_zero": true
+    },
+    "bm25 - hybrid": {
+     "mean": -0.0136,
+     "ci95": [
+      -0.0663,
+      0.0388
+     ],
+     "excludes_zero": false
+    }
+   }
+  },
+  "default (fact-check excluded) | source_hit@10": {
+   "n_claims": 33,
+   "mean": {
+    "dense": 0.303,
+    "bm25": 0.1515,
+    "hybrid": 0.1818
+   },
+   "ci95": {
+    "dense": [
+     0.1515,
+     0.4545
+    ],
+    "bm25": [
+     0.0303,
+     0.2727
+    ],
+    "hybrid": [
+     0.0606,
+     0.3333
+    ]
+   },
+   "paired_diff": {
+    "dense - bm25": {
+     "mean": 0.1515,
+     "ci95": [
+      0.0,
+      0.303
+     ],
+     "excludes_zero": false
+    },
+    "dense - hybrid": {
+     "mean": 0.1212,
+     "ci95": [
+      -0.0303,
+      0.2727
+     ],
+     "excludes_zero": false
+    },
+    "bm25 - hybrid": {
+     "mean": -0.0303,
+     "ci95": [
+      -0.1515,
+      0.0606
+     ],
+     "excludes_zero": false
+    }
+   }
+  },
+  "ablation (fact-check included) | cov_novel@B512": {
+   "n_claims": 31,
+   "mean": {
+    "dense": 0.3664,
+    "bm25": 0.2851,
+    "hybrid": 0.3017
+   },
+   "ci95": {
+    "dense": [
+     0.2716,
+     0.4655
+    ],
+    "bm25": [
+     0.2128,
+     0.3689
+    ],
+    "hybrid": [
+     0.2402,
+     0.3729
+    ]
+   },
+   "paired_diff": {
+    "dense - bm25": {
+     "mean": 0.0814,
+     "ci95": [
+      -0.0193,
+      0.1809
+     ],
+     "excludes_zero": false
+    },
+    "dense - hybrid": {
+     "mean": 0.0648,
+     "ci95": [
+      -0.0059,
+      0.147
+     ],
+     "excludes_zero": false
+    },
+    "bm25 - hybrid": {
+     "mean": -0.0166,
+     "ci95": [
+      -0.0687,
+      0.0444
+     ],
+     "excludes_zero": false
+    }
+   }
+  },
+  "ablation (fact-check included) | cov_union@B512": {
+   "n_claims": 33,
+   "mean": {
+    "dense": 0.4278,
+    "bm25": 0.3602,
+    "hybrid": 0.3742
+   },
+   "ci95": {
+    "dense": [
+     0.3451,
+     0.5163
+    ],
+    "bm25": [
+     0.2927,
+     0.4371
+    ],
+    "hybrid": [
+     0.3157,
+     0.4391
+    ]
+   },
+   "paired_diff": {
+    "dense - bm25": {
+     "mean": 0.0676,
+     "ci95": [
+      -0.0145,
+      0.1508
+     ],
+     "excludes_zero": false
+    },
+    "dense - hybrid": {
+     "mean": 0.0536,
+     "ci95": [
+      -0.0051,
+      0.1227
+     ],
+     "excludes_zero": false
+    },
+    "bm25 - hybrid": {
+     "mean": -0.014,
+     "ci95": [
+      -0.0589,
+      0.0393
+     ],
+     "excludes_zero": false
+    }
+   }
+  },
+  "ablation (fact-check included) | answer_recall@10": {
+   "n_claims": 33,
+   "mean": {
+    "dense": 0.2434,
+    "bm25": 0.2205,
+    "hybrid": 0.2306
+   },
+   "ci95": {
+    "dense": [
+     0.1212,
+     0.3788
+    ],
+    "bm25": [
+     0.0943,
+     0.3636
+    ],
+    "hybrid": [
+     0.1044,
+     0.3737
+    ]
+   },
+   "paired_diff": {
+    "dense - bm25": {
+     "mean": 0.0229,
+     "ci95": [
+      -0.1061,
+      0.1532
+     ],
+     "excludes_zero": false
+    },
+    "dense - hybrid": {
+     "mean": 0.0128,
+     "ci95": [
+      -0.0848,
+      0.1111
+     ],
+     "excludes_zero": false
+    },
+    "bm25 - hybrid": {
+     "mean": -0.0101,
+     "ci95": [
+      -0.101,
+      0.0808
+     ],
+     "excludes_zero": false
+    }
+   }
+  },
+  "ablation (fact-check included) | cov_novel@10": {
+   "n_claims": 31,
+   "mean": {
+    "dense": 0.6449,
+    "bm25": 0.591,
+    "hybrid": 0.6052
+   },
+   "ci95": {
+    "dense": [
+     0.5514,
+     0.7339
+    ],
+    "bm25": [
+     0.5095,
+     0.6709
+    ],
+    "hybrid": [
+     0.5188,
+     0.6905
+    ]
+   },
+   "paired_diff": {
+    "dense - bm25": {
+     "mean": 0.0539,
+     "ci95": [
+      -0.0106,
+      0.1202
+     ],
+     "excludes_zero": false
+    },
+    "dense - hybrid": {
+     "mean": 0.0397,
+     "ci95": [
+      0.0081,
+      0.0754
+     ],
+     "excludes_zero": true
+    },
+    "bm25 - hybrid": {
+     "mean": -0.0142,
+     "ci95": [
+      -0.0602,
+      0.0331
+     ],
+     "excludes_zero": false
+    }
+   }
+  },
+  "ablation (fact-check included) | source_hit@10": {
+   "n_claims": 33,
+   "mean": {
+    "dense": 0.3333,
+    "bm25": 0.1515,
+    "hybrid": 0.1818
+   },
+   "ci95": {
+    "dense": [
+     0.1818,
+     0.5152
+    ],
+    "bm25": [
+     0.0303,
+     0.2727
+    ],
+    "hybrid": [
+     0.0606,
+     0.3333
+    ]
+   },
+   "paired_diff": {
+    "dense - bm25": {
+     "mean": 0.1818,
+     "ci95": [
+      0.0303,
+      0.3333
+     ],
+     "excludes_zero": true
+    },
+    "dense - hybrid": {
+     "mean": 0.1515,
+     "ci95": [
+      0.0303,
+      0.2727
+     ],
+     "excludes_zero": true
+    },
+    "bm25 - hybrid": {
+     "mean": -0.0303,
+     "ci95": [
+      -0.1212,
+      0.0606
+     ],
+     "excludes_zero": false
+    }
+   }
+  }
+ },
  "bootstrap_reachable_claims": {
   "default (fact-check excluded) | SourceHit@10": {
    "mean": {
@@ -464,17 +947,17 @@
  },
  "latency": {
   "dense": {
-   "ms_per_query_single_median": 682.5
+   "ms_per_query_single_median": 736.4
   },
   "bm25": {
-   "ms_per_query_single_median": 405.6
+   "ms_per_query_single_median": 281.4
   },
   "hybrid": {
-   "ms_per_query_single_median": 932.2
+   "ms_per_query_single_median": 919.5
   }
  },
- "free_disk_gb": 32.0,
- "peak_ram_gb": 4.8,
+ "free_disk_gb": 26.6,
+ "peak_ram_gb": 5.28,
  "bands": [
   0,
   1

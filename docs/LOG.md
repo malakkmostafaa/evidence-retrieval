@@ -16,3 +16,8 @@ Three lines per session: tried / happened / next. Failed attempts belong here.
 - Tried: chunker (regex-based generator), band 0 chunking, embed benchmark, BM25, search tool and tests.
 - Happened: band 0 = 1.58M chunks in 557 s (stragglers: one 134M-character store ran alone at the end); embed speed 300 chunks/s (GPU throttled to 652 MHz). Failed attempts: first chunker tests hung (regex backtracking, see above); two stale pytest processes kept burning CPU until killed. Embedding of band 0 and chunking of bands 1-5 run in the background.
 - Next: BM25 for band 0, S5 evaluation on band-0 claims, then bands 1-5 as they finish.
+
+## 2026-10-19 (metrics port)
+- Tried: ported legacy answer-coverage metrics to evret.metrics_cov; hand + golden + mutation tests; regression on the 100 labels; text-match leakage check; S5 now reports CovNovel@512 etc.
+- Happened: saved legacy values reproduce the reported AUCs exactly only if NaN novel rows are dropped (my first run scored them 0: 0.717 instead of 0.752; wrong guess, fixed). Scorable-only answers reproduce 77/100 rows; adding the legacy anchoring step reproduces 55/57 pool rows. Remaining pool rows: row 35 (claim 164) differs 0.2273 vs 0.2222 because an answer is anchored on the full-length page now but was not on the old 100k-truncated text; row 68 (claim 181): gold URL is empty in the new store (a m.economictimes.com copy has text), the old run had text. Equivalent mutant: 'p.n_tokens < room' in build_context (a passage exactly filling the budget is cut at its last token = whole text).
+- Next: ask Malak about reading sealed gold pages for anchoring, and about the old chunker (pack_200_250 in legacy chunker.py differs from my word-based packer).
