@@ -12,7 +12,7 @@ corpus and web candidates together. Everything the network returns is stored in 
 - Corpus code to reuse unchanged: `evret.chunk` (pack_200_250, `make_counter`, `chunk_document`), `evret.embed.Encoder`
   (BGE-small, revision pinned), `evret.bm25` (`tokenize`, `term_hash`, `BM25Index.idfs`), `evret.urls` (`canonical`,
   `url_variants`), `evret.audit.is_factcheck`, `evret.search.Hit`/`Filters`.
-- Pool BM25 statistics: `evret-main/data/corpus_v1/bm25/band=0..5` (all six bands exist, N = 6,415,862 chunks). Read-only; I read
+- Pool BM25 statistics: `evret-main/data/corpus_v1/bm25/band=0..5` (all six bands exist, N = 6,415,863 chunks). Read-only; I read
   only `meta.json`, `doclen.npy` (sum -> avgdl) and the term offsets (-> df of the query terms). No postings are loaded.
   To stay reproducible the web tool copies N, avgdl and the df of every query term it uses into the web cache manifest.
 - dev.json present. The worktree has no `data/` and no `.venv` (see open question Q1).

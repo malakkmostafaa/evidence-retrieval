@@ -6,3 +6,4 @@ __pycache__/
 outputs/**/*.csv.gz
 .pytest_cache/
 logs/
+outputs/web_cache/

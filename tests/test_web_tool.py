@@ -218,3 +218,19 @@ def test_manifest_hash_changes_when_only_a_stored_vector_changes(tmp_path):
     key, vecs = tool.cache.execute("SELECT key, vecs FROM chunks ORDER BY key")[0]
     tool.cache.execute("UPDATE chunks SET vecs=? WHERE key=?", (bytes(len(vecs)), key))
     assert tool.manifest_hash() != h1
+
+
+def test_a_failing_engine_gives_no_hits_and_a_recorded_error_but_replay_miss_still_raises(tmp_path):
+    class Broken(Prov):
+        def search(self, query, n):
+            raise RuntimeError("No results found.")
+    tool, reqs = build(tmp_path)
+    tool.search.provider = Broken()
+    tool.search.sleep = lambda s: None
+    assert tool.search_web(QUERY, claim_context=CLAIM) == []
+    assert tool.last_report.search_error.startswith("RuntimeError") and tool.last_report.counts()["search_failed"] == 1
+    assert not reqs                                                              # nothing else was attempted
+    assert tool.search.cache.manifest() == []                                    # a failure is never cached as 'no results'
+    rtool, _ = build(tmp_path, mode=Mode.REPLAY)
+    with pytest.raises(ReplayMiss):
+        rtool.search_web(QUERY, claim_context=CLAIM)

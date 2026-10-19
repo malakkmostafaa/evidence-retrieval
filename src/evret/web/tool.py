@@ -22,7 +22,7 @@ from evret.web.filters import date_reason, url_reason
 from evret.web.hit import WebHit, stable_id
 from evret.web.pagecache import page_key
 from evret.web.providers import CachedSearch
-from evret.web.schema import ClaimContext, Mode
+from evret.web.schema import ClaimContext, Mode, ReplayMiss
 from evret.web.select import PassageStore, PoolStats, select
 
 STEPS = ("search", "wayback", "fetch", "extract", "chunk", "embed", "select")
@@ -57,6 +57,7 @@ class QueryReport:
     urls: list = field(default_factory=list)
     seconds: dict = field(default_factory=lambda: {s: 0.0 for s in STEPS})
     n_passages: int = 0
+    search_error: str = ""
 
     def counts(self) -> dict:
         c: dict = {"returned": len(self.urls)}
@@ -69,6 +70,7 @@ class QueryReport:
         for dc in ("dated_le", "dated_after", "unknown"):
             c[dc] = sum(u.date_class == dc for u in self.urls)
         c["kept"] = sum(u.removed is None for u in self.urls)
+        c["search_failed"] = int(bool(self.search_error))
         return c
 
 
@@ -147,7 +149,13 @@ class WebSearchTool:
         self.last_report = rep
 
         with self._t("search"):
-            results = self.search.search(query)[: self.max_pages]
+            try:
+                results = self.search.search(query)[: self.max_pages]
+            except ReplayMiss:
+                raise
+            except Exception as e:                       # engine blocked / "No results found" after all retries: not cached, counted
+                rep.search_error = f"{type(e).__name__}: {str(e)[:120]}"
+                results = []
         recs = [UrlRecord(r.url, r.engine_rank, r.engine) for r in results]
         rep.urls = recs
 
