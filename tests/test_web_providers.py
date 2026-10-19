@@ -307,3 +307,14 @@ def test_a_cache_directory_is_locked_to_one_provider(tmp_path):
     lock_provider(str(tmp_path), "serper/google")                       # same provider again: fine
     with pytest.raises(RuntimeError, match="never mix providers"):
         lock_provider(str(tmp_path), "ddgs/duckduckgo")
+
+
+def test_pool_claim_list_is_the_180_pool_ranks_from_the_shared_table_and_never_sealed():
+    from evret.web import eval_web as ew
+    if not os.path.exists(os.path.join(ew.CORPUS, "ranks.json")) or not os.path.exists(ew.DEV):
+        pytest.skip("corpus rank table / dev.json not available")
+    cl = ew.load_smoke_claims(which="pool")
+    ranks = {int(k): v for k, v in json.load(open(os.path.join(ew.CORPUS, "ranks.json"))).items()}
+    assert [c["rank"] for c in cl] == list(range(180)) and len({c["claim_id"] for c in cl}) == 180
+    assert all(ranks[c["claim_id"]] == c["rank"] and c["rank"] // 30 < 6 for c in cl)
+    assert all(c["group"] == "pooled" for c in cl)

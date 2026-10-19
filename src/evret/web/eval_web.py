@@ -44,8 +44,13 @@ def load_smoke_claims(dev_path: str = DEV, ranks_path: str | None = None, which:
     by_rank = {r: c for c, r in ranks.items()}
     dev = load_dev(dev_path)
     out = []
-    groups = (("pooled", POOLED_RANKS), ("held-out", HELD_OUT_RANKS)) if which == "smoke" else (
-        ("pooled", range(0, 180)), ("held-out", range(180, 300)))
+    if which == "pool":                            # bands 0..pool_bands-1 of the shared rank table; sealed claims are never loaded
+        cfg = json.load(open(os.path.join(CORPUS, "manifest.json"), encoding="utf-8"))["config"]
+        groups = (("pooled", range(0, cfg["pool_bands"] * cfg["band_size"])),)
+    elif which == "smoke":
+        groups = (("pooled", POOLED_RANKS), ("held-out", HELD_OUT_RANKS))
+    else:
+        groups = (("pooled", range(0, 180)), ("held-out", range(180, 300)))
     for group, rr in groups:
         for r in rr:
             cid = by_rank[r]
@@ -166,14 +171,17 @@ def main(argv=None):
     ap.add_argument("--provider", choices=["serper", "ddgs"], required=True, help="serper = evaluation runs; ddgs = development only")
     ap.add_argument("--conds", default="main,lenient,factcheck")
     ap.add_argument("--limit", type=int, default=None)
-    ap.add_argument("--claims", choices=["smoke", "all"], default="smoke", help="smoke = 15 claims, all = the 300 ranked claims (JSONL output)")
+    ap.add_argument("--claims", choices=["smoke", "pool", "all"], default="smoke", help="smoke = 15 claims, pool = the 180 pool claims (bands 0-5), all = 300 (needs approval); pool/all write JSONL")
+    ap.add_argument("--threads", type=int, default=3, help="CPU threads for the embedding model (keep low while the GPU job runs)")
     ap.add_argument("--resume", action="store_true", help="keep results already in results.json (their timings stay cold)")
     a = ap.parse_args(argv)
     os.makedirs(a.out, exist_ok=True)
     claims = load_smoke_claims(which=a.claims)[: a.limit]
+    import torch
+    torch.set_num_threads(a.threads)
     tool, netlog, prov = build_tool(a.cache, a.replay, provider=a.provider)
     q0 = prov.budget.used() if hasattr(prov, "budget") else None
-    full = a.claims == "all"
+    full = a.claims in ("pool", "all")
     path = os.path.join(a.out, ("results_replay" if a.replay else "results") + (".jsonl" if full else ".json"))
     results = load_results(a.out, a.replay) if a.resume else []
     if a.resume:                                   # a failed search is redone; successful claims keep their (cold) timings
