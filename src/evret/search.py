@@ -31,6 +31,7 @@ RRF_K = 60
 @dataclass
 class Filters:
     exclude_norm_urls: frozenset = frozenset()              # per query (built by the evaluation layer)
+    exclude_doc_ids: frozenset = frozenset()                # per query: documents removed from the searchable pool
     exclude_flags: frozenset = frozenset({"factcheck", "tiny"})
     domains: frozenset | None = None                         # keep only these hosts (and their subdomains)
     exclude_domains: frozenset = frozenset()
@@ -130,14 +131,15 @@ class Corpus:
 
     def excluded_ranges(self, f: Filters) -> list[tuple[int, int]]:
         """Local chunk index ranges [a, b) of the documents whose normalised URL is excluded."""
-        out = []
+        dids = set(f.exclude_doc_ids)
         for u in f.exclude_norm_urls:
-            for did in self.url_to_docs.get(u, ()):
-                a = int(np.searchsorted(self.doc_id, did, "left"))
-                b = int(np.searchsorted(self.doc_id, did, "right"))
-                if b > a:
-                    out.append((a, b))
-        return out
+            dids.update(self.url_to_docs.get(u, ()))
+        dids = np.array(sorted(dids), dtype=np.int64)
+        if not len(dids):
+            return []
+        lo = np.searchsorted(self.doc_id, dids, "left")
+        hi = np.searchsorted(self.doc_id, dids, "right")
+        return [(int(a), int(b)) for a, b in zip(lo, hi) if b > a]
 
     def apply_exclusions(self, scores: np.ndarray, ranges, offset: int, value: float):
         """scores covers local indices [offset, offset + len)."""
@@ -269,20 +271,30 @@ class DenseExact(Retriever):
 class BM25(Retriever):
     name = "bm25"
 
-    def __init__(self, corpus: Corpus, index: "bm.BM25Index"):
+    def __init__(self, corpus: Corpus, index: "bm.BM25Index", exact_stats: bool = False):
+        """exact_stats: N, df and the average length are recomputed without the chunks removed by the per-query
+        exclusions (URLs, doc ids), as if the index had been built without them. False = frozen pool statistics."""
         super().__init__(corpus)
         self.index = index
+        self.exact_stats = exact_stats
 
     def candidates_batch(self, queries, k, filters):
         out = []
         for q, f in zip(queries, filters):
             hashes = self.index.query_terms(q)
-            idf = self.index.idfs(hashes)
             mask = self.corpus.base_mask(f)
             rg = self.corpus.excluded_ranges(f)
+            avgdl = None
+            if self.exact_stats and rg:
+                glob = sorted((a + self.corpus.lo, b + self.corpus.lo) for a, b in rg)
+                n_rm, dl_rm, df_rm = self.index.removed_stats(hashes, glob)
+                idf = self.index.idfs(hashes, n_rm, df_rm)
+                avgdl = (self.index.total_dl - dl_rm) / max(self.index.N - n_rm, 1)
+            else:
+                idf = self.index.idfs(hashes)
             ids_all, sc_all = [], []
             for band in self.index.bands:
-                s = self.index.score_band(band, hashes, idf)
+                s = self.index.score_band(band, hashes, idf, avgdl)
                 off = band["first"] - self.corpus.lo
                 s[~mask[off:off + band["n"]]] = 0.0
                 self.corpus.apply_exclusions(s, rg, off, 0.0)

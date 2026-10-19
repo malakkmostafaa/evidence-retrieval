@@ -126,6 +126,7 @@ class BM25Index:
         self.bands.sort(key=lambda x: x["first"])
         self.N = sum(x["n"] for x in self.bands)
         tot = sum(int(np.asarray(x["dl"], dtype=np.int64).sum()) for x in self.bands)
+        self.total_dl = tot
         self.avgdl = tot / self.N if self.N else 1.0
 
     def _slice(self, band, h: int):
@@ -139,18 +140,45 @@ class BM25Index:
     def query_terms(self, query: str):
         return sorted({term_hash(t) for t in tokenize(query)})
 
-    def idfs(self, hashes):
+    def removed_stats(self, hashes, ranges):
+        """Statistics of the chunks inside `ranges` (sorted, disjoint global chunk-id intervals [a, b)):
+        (number of chunks, sum of their lengths, {term hash: number of those chunks containing the term})."""
+        n_rm = int(sum(b - a for a, b in ranges))
+        dl_rm = 0
+        for band in self.bands:
+            lo_b, hi_b = band["first"], band["first"] + band["n"]
+            for a, b in ranges:
+                x, y = max(a, lo_b), min(b, hi_b)
+                if y > x:
+                    dl_rm += int(np.asarray(band["dl"][x - lo_b:y - lo_b], dtype=np.int64).sum())
+        starts = np.array([a for a, _ in ranges], dtype=np.int64)
+        ends = np.array([b for _, b in ranges], dtype=np.int64)
+        df_rm = {}
+        for h in hashes:
+            c = 0
+            for band in self.bands:
+                sl = self._slice(band, h)
+                if sl and len(starts):
+                    ch = sl[2]["chunks"][sl[0]:sl[1]]
+                    c += int((np.searchsorted(ch, ends, "left") - np.searchsorted(ch, starts, "left")).sum())
+            df_rm[h] = c
+        return n_rm, dl_rm, df_rm
+
+    def idfs(self, hashes, n_rm: int = 0, df_rm: dict | None = None):
         out = {}
+        N = self.N - n_rm
         for h in hashes:
             df = 0
             for band in self.bands:
                 s = self._slice(band, h)
                 if s:
                     df += int(s[1] - s[0])
-            out[h] = math.log(1.0 + (self.N - df + 0.5) / (df + 0.5)) if df else 0.0
+            if df_rm:
+                df -= df_rm.get(h, 0)
+            out[h] = math.log(1.0 + (N - df + 0.5) / (df + 0.5)) if df > 0 else 0.0
         return out
 
-    def score_band(self, band, hashes, idf) -> np.ndarray:
+    def score_band(self, band, hashes, idf, avgdl: float | None = None) -> np.ndarray:
         """Dense float32 score vector over the chunks of one band (0 where no query term occurs)."""
         scores = np.zeros(band["n"], dtype=np.float32)
         dl = band["dl"]
@@ -162,7 +190,7 @@ class BM25Index:
                 continue
             ids = np.asarray(s[2]["chunks"][s[0]:s[1]]).astype(np.int64) - band["first"]
             tf = np.asarray(s[2]["tfs"][s[0]:s[1]]).astype(np.float32)
-            norm = self.k1 * (1.0 - self.b + self.b * np.asarray(dl[ids], dtype=np.float32) / self.avgdl)
+            norm = self.k1 * (1.0 - self.b + self.b * np.asarray(dl[ids], dtype=np.float32) / (self.avgdl if avgdl is None else avgdl))
             scores[ids] += (idf[h] * tf * (self.k1 + 1.0) / (tf + norm)).astype(np.float32)
         return scores
 

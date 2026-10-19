@@ -94,3 +94,29 @@ def test_per_band_statistics_would_differ(tmp_path):
     h = local.query_terms("a d e z")
     s_local = local.score_band(local.bands[0], h, local.idfs(h))
     assert not np.allclose(s_local, out["a d e z"][0][:3])
+
+
+def test_exact_stats_after_removal_equal_an_index_built_without_those_chunks(tmp_path):
+    """Removing chunks 2 and 5 with recomputed N / df / avgdl scores the other chunks EXACTLY like an index built on the
+    remaining 6 chunks (bit-identical); frozen statistics give different numbers."""
+    removed = [2, 5]
+    keep = [i for i in range(len(TEXTS)) if i not in removed]
+    whole = str(tmp_path / "whole")
+    bm.build_band(whole, 0, [bm.postings_from_texts(TEXTS, 0)])
+    full = bm.BM25Index([whole])
+    part = str(tmp_path / "part")
+    bm.build_band(part, 0, [bm.postings_from_texts([TEXTS[i] for i in keep], 0)])
+    small = bm.BM25Index([part])
+    ranges = [(2, 3), (5, 6)]
+    for q in ["a", "b c", "a d e z", "c c d", "nothing"]:
+        h = full.query_terms(q)
+        n_rm, dl_rm, df_rm = full.removed_stats(h, ranges)
+        idf = full.idfs(h, n_rm, df_rm)
+        avg = (full.total_dl - dl_rm) / (full.N - n_rm)
+        s_exact = full.score_band(full.bands[0], h, idf, avg)[keep]
+        hs = small.query_terms(q)
+        s_ref = small.score_band(small.bands[0], hs, small.idfs(hs))
+        np.testing.assert_array_equal(s_exact, s_ref, err_msg=q)
+        s_frozen = full.score_band(full.bands[0], h, full.idfs(h))[keep]
+        if q == "a d e z":
+            assert not np.allclose(s_frozen, s_ref)               # the frozen approximation is not exact
