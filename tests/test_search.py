@@ -10,6 +10,7 @@ Documents (url -> text; every text is longer than 200 characters so nothing is "
   P4 new.example/2022/01/05/s    "gamma zeta " x 60                  (dated 2022-01-05)
   P5 undated.example/u           "gamma eta " x 60                   (no date)
   P6 other.example/u             same text as P5, another URL        (exact tie with P5)
+  P7 stored under a web.archive.org wrapper around wrapped.example/w   "omega kappa " x 60
   S1 sealed.example/s            "alpha sealed " x 60                (only in sealed claims)
 Claims 0..3; band_size 2, pool_bands 1 -> the two claims with ranks 0 and 1 are the pool.
 """
@@ -35,6 +36,7 @@ DOCS = {
     "P4": ("https://new.example/2022/01/05/s", "gamma zeta " * 60),
     "P5": ("https://undated.example/u", "gamma eta " * 60),
     "P6": ("https://other.example/u", "gamma eta " * 60),
+    "P7": ("https://web.archive.org/web/20190101000000/https://wrapped.example/w", "omega kappa " * 60),
     "S1": ("https://sealed.example/s", "alpha sealed " * 60),
 }
 LABELS = {0: "Refuted", 1: "Supported", 2: "Refuted", 3: "Supported"}
@@ -58,7 +60,7 @@ def world(tmp_path_factory):
     ranks = poolmod.build_ranks(list(range(4)), LABELS, 42)
     pool_claims = sorted(ranks, key=ranks.get)[:2]
     sealed_claims = sorted(ranks, key=ranks.get)[2:]
-    stores = {pool_claims[0]: ["P1", "P2", "P3"], pool_claims[1]: ["P4", "P5", "P6"],
+    stores = {pool_claims[0]: ["P1", "P2", "P3"], pool_claims[1]: ["P4", "P5", "P6", "P7"],
               sealed_claims[0]: ["S1", "P1"], sealed_claims[1]: ["S1"]}
     zdir = os.path.join(root, "zips")
     os.makedirs(zdir)
@@ -97,7 +99,7 @@ def urls(hits):
 
 
 def test_only_pool_documents_exist(world):
-    assert world["corpus"].n == 6                                   # P1..P6, one chunk each; S1 was never chunked
+    assert world["corpus"].n == 7                                   # P1..P7, one chunk each; S1 was never chunked
     for r in ("dense", "bm25", "hybrid"):
         for q in ("sealed", "alpha sealed", "sealed.example"):
             assert "https://sealed.example/s" not in urls(world[r].search(q, 10))
@@ -185,3 +187,21 @@ def test_search_batch_equals_single_calls(world):
         for q, b in zip(qs, batch):
             single = world[r].search(q, 4)
             assert [(x.chunk_id, round(x.score, 9)) for x in b] == [(x.chunk_id, round(x.score, 9)) for x in single]
+
+
+def test_exclusion_finds_documents_stored_under_a_wayback_wrapper(world):
+    """A document is excluded whether the filter names its stored URL or the unwrapped original (and vice versa)."""
+    from evret.urls import url_variants
+    wrapped = "https://web.archive.org/web/20200101000000/https://news.example/a"      # wrapper around P1
+    f = sr.Filters(exclude_norm_urls=frozenset(url_variants(wrapped)))
+    for r in ("dense", "bm25", "hybrid"):
+        assert "https://news.example/a" not in urls(world[r].search("alpha beta gamma", 10, f)), r
+    assert "https://news.example/a" in urls(world["bm25"].search("alpha beta gamma", 10))
+
+
+def test_exclusion_of_a_document_stored_under_a_wrapper_by_its_original_url(world):
+    wrapped_url = "https://web.archive.org/web/20190101000000/https://wrapped.example/w"
+    assert wrapped_url in urls(world["bm25"].search("omega", 5))
+    f = sr.Filters(exclude_norm_urls=frozenset({"wrapped.example/w"}))        # the original URL, as dev.json may name it
+    for r in ("dense", "bm25", "hybrid"):
+        assert wrapped_url not in urls(world[r].search("omega kappa", 7, f)), r

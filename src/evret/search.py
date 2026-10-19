@@ -21,6 +21,7 @@ import pyarrow.parquet as pq
 from evret import bm25 as bm
 from evret.chunk import FLAG_FACTCHECK, FLAG_HARD, FLAG_PDF, FLAG_SPLIT
 from evret.ingest import decode_text
+from evret.urls import canonical
 
 FLAG_NAMES = {FLAG_FACTCHECK: "factcheck", FLAG_PDF: "pdf", FLAG_SPLIT: "split", FLAG_HARD: "hardcap"}
 FLAG_BY_NAME = {v: k for k, v in FLAG_NAMES.items()}
@@ -95,8 +96,9 @@ class Corpus:
                                    "is_factcheck", "is_tiny"]).to_pydict()
         self.docs = d
         self.url_to_docs: dict[str, list[int]] = {}
-        for did, u in zip(d["doc_id"], d["norm_url"]):
-            self.url_to_docs.setdefault(u, []).append(did)
+        for did, u in zip(d["doc_id"], d["norm_url"]):               # a document is found under its stored URL and
+            for key in {u, canonical(u)}:                           # under the unwrapped (Wayback) original URL
+                self.url_to_docs.setdefault(key, []).append(did)
         self._masks: dict = {}
         self.db = sqlite3.connect(f"file:{os.path.join(root, 'chunk_text.sqlite')}?mode=ro", uri=True,
                                   check_same_thread=False)
