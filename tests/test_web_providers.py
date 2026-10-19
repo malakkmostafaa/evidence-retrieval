@@ -182,3 +182,128 @@ def test_failure_is_remembered_for_replay_and_cleared_by_a_later_success(tmp_pat
         rp.search("sun")
     cs.search("moon")                                                           # 5th call succeeds
     assert rp.search("moon") and cs.cache.get_failure(SearchCache.key("fake", "b1", "1.0", "moon", {"n": 10})) is None
+
+
+# ------------------------------------------------------------------------------------------------ Serper
+SECRET = "sk-test-SECRET-123"
+
+
+def serper(tmp_path, post, **kw):
+    from evret.web.providers import QueryBudget, SerperProvider
+    warns = []
+    b = QueryBudget(str(tmp_path / "b" / "budget.json"), "serper", warn_at=3, refuse_at=5, warn=warns.append, **kw)
+    return SerperProvider(budget=b, api_key=SECRET, http_post=post), b, warns
+
+
+def test_serper_parses_documented_shape_orders_by_position_and_sends_the_exact_request(tmp_path):
+    fx = load("serper_sample.json")
+    seen = {}
+
+    def post(url, headers, body):
+        seen.update(url=url, headers=headers, body=body)
+        return 200, fx
+    p, b, _ = serper(tmp_path, post)
+    res = p.search("a claim text", 10)
+    assert [(r.url, r.engine, r.engine_rank) for r in res] == [("https://a.example/1", "google", 1), ("https://b.example/2", "google", 2),
+                                                                ("https://c.example/3", "google", 3)]      # by position, duplicate dropped
+    assert seen["url"] == "https://google.serper.dev/search" and seen["headers"]["X-API-KEY"] == SECRET
+    assert seen["body"] == {"q": "a claim text", "gl": "us", "hl": "en", "num": 10, "autocorrect": False}    # no silent query rewriting
+    assert p.last_credits == 1 and b.used() == 1
+    assert (p.name, p.backend, p.params) == ("serper", "google", {"gl": "us", "hl": "en", "autocorrect": False})
+
+
+def test_serper_missing_key_fails_before_any_request_or_budget_use(tmp_path, monkeypatch):
+    from evret.web.providers import NonRetryable, QueryBudget, SerperProvider
+    monkeypatch.delenv("SERPER_API_KEY", raising=False)
+    calls = []
+    b = QueryBudget(str(tmp_path / "b.json"), "serper")
+    p = SerperProvider(budget=b, http_post=lambda *a: calls.append(a))
+    with pytest.raises(NonRetryable, match="SERPER_API_KEY"):
+        p.search("q", 10)
+    assert not calls and b.used() == 0
+    monkeypatch.setenv("SERPER_API_KEY", SECRET)
+    p2 = SerperProvider(budget=b, http_post=lambda u, h, body: (200, {"organic": []}))
+    assert p2.search("q", 10) == [] and b.used() == 1
+
+
+def test_serper_key_never_reaches_log_cache_or_error_text(tmp_path):
+    def post(url, headers, body):
+        return 500, {"message": "server error"}
+    p, b, _ = serper(tmp_path, post)
+    ft = FakeTime()
+    cs = CachedSearch(p, SearchCache(str(tmp_path / "s.sqlite")), limiter=RateLimiter(1.0, ft.clock, ft.sleep), clock=ft.clock, sleep=ft.sleep)
+    with pytest.raises(RuntimeError) as e:
+        cs.search("moon")
+    blob = json.dumps(cs.netlog.records) + str(e.value) + json.dumps(cs.cache.manifest()) + json.dumps(cs.cache.db.execute("SELECT * FROM failures").fetchall())
+    assert SECRET not in blob
+
+
+def test_serper_http_errors_5xx_are_retried_but_401_402_are_not_and_not_recorded_as_query_failures(tmp_path):
+    from evret.web.providers import NonRetryable
+    n = {"i": 0}
+
+    def flaky(url, headers, body):
+        n["i"] += 1
+        return (503, {}) if n["i"] < 3 else (200, load("serper_sample.json"))
+    p, b, _ = serper(tmp_path, flaky)
+    ft = FakeTime()
+    cs = CachedSearch(p, SearchCache(str(tmp_path / "s.sqlite")), limiter=RateLimiter(1.0, ft.clock, ft.sleep), clock=ft.clock, sleep=ft.sleep)
+    assert len(cs.search("moon")) == 3 and n["i"] == 3 and b.used() == 3          # every SENT request is counted
+    p2, b2, _ = serper(tmp_path / "x", lambda u, h, body: (402, {"message": "Not enough credits"}))
+    cs2 = CachedSearch(p2, SearchCache(str(tmp_path / "s2.sqlite")), limiter=RateLimiter(1.0, ft.clock, ft.sleep), clock=ft.clock, sleep=ft.sleep)
+    with pytest.raises(NonRetryable):
+        cs2.search("moon")
+    assert b2.used() == 1 and cs2.cache.db.execute("SELECT count(*) FROM failures").fetchone()[0] == 0    # one request, not four; not a query failure
+
+
+def test_serper_empty_answer_is_cached_as_a_real_result_without_retry(tmp_path):
+    p, b, _ = serper(tmp_path, lambda u, h, body: (200, {"organic": []}))
+    ft = FakeTime()
+    cs = CachedSearch(p, SearchCache(str(tmp_path / "s.sqlite")), limiter=RateLimiter(1.0, ft.clock, ft.sleep), clock=ft.clock, sleep=ft.sleep)
+    assert cs.search("moon") == [] and cs.search("moon") == [] and b.used() == 1       # second call is a cache hit: zero credits
+
+
+def test_budget_counter_persists_warns_at_threshold_and_refuses_unless_overridden(tmp_path):
+    from evret.web.providers import BudgetExceeded, QueryBudget
+    warns = []
+    path = str(tmp_path / "b.json")
+    b = QueryBudget(path, "serper", warn_at=3, refuse_at=5, warn=warns.append)
+    for _ in range(2):
+        b.spend()
+    assert warns == [] and b.used() == 2
+    b2 = QueryBudget(path, "serper", warn_at=3, refuse_at=5, warn=warns.append)            # new object = new process: count persists
+    assert b2.used() == 2
+    b2.spend()
+    assert len(warns) == 1 and "3" in warns[0]
+    b2.spend()
+    b2.spend()                                                                              # 5th is allowed (limit is 'more than 5')
+    assert b2.used() == 5 and len(warns) == 1                                               # warned once only
+    with pytest.raises(BudgetExceeded):
+        b2.spend()
+    assert b2.used() == 5                                                                   # refused query is not counted
+    ov = QueryBudget(path, "serper", warn_at=3, refuse_at=5, override=True, warn=warns.append)
+    assert ov.spend() == 6
+    assert QueryBudget(path, "other", warn_at=3, refuse_at=5).used() == 0                  # providers are counted separately
+
+
+def test_replay_of_serper_cache_costs_no_credit_and_budget_default_levels():
+    import inspect
+
+    from evret.web.providers import QueryBudget
+    d = inspect.signature(QueryBudget.__init__).parameters
+    assert (d["warn_at"].default, d["refuse_at"].default) == (1500, 2300)
+
+
+def test_serper_refuses_more_than_ten_results_per_query_because_that_costs_two_credits(tmp_path):
+    p, b, _ = serper(tmp_path, lambda u, h, body: (200, {"organic": []}))
+    with pytest.raises(ValueError):
+        p.search("q", 11)
+    assert b.used() == 0
+
+
+def test_a_cache_directory_is_locked_to_one_provider(tmp_path):
+    from evret.web.eval_web import lock_provider
+    lock_provider(str(tmp_path), "serper/google")
+    lock_provider(str(tmp_path), "serper/google")                       # same provider again: fine
+    with pytest.raises(RuntimeError, match="never mix providers"):
+        lock_provider(str(tmp_path), "ddgs/duckduckgo")

@@ -1,4 +1,4 @@
-"""Diagnosis of the smoke run from cached data only (no network): search-failure timeline, per-claim gold funnel, coverage proxy.
+"""Diagnosis of the smoke run from cached data only (no network): search-failure timeline, per-claim gold funnel.
 
 usage: python -m evret.web.diagnose outputs/web_smoke outputs/web_cache  -> <dir>/diagnosis.md
 """
@@ -123,48 +123,13 @@ def gold_funnel(results, claims) -> str:
     return "\n".join(out)
 
 
-def coverage(results, claims, top_ks=(5, 10, 50)) -> str:
-    raw = json.load(open(DEV, encoding="utf-8"))
-    by = {c["claim_id"]: c for c in claims}
-    out = ["## 3. Answer-content coverage proxy\n",
-           "**Not found in the earlier experiments** (the notebooks 05 only have gold-*source* hit@N, which is the funnel above). Defined here as "
-           "a new, simple proxy and labelled as such: for each claim, the set of content words (lower-cased alphanumerics of length >= 3, "
-           "scikit-learn English stop-word list) of all gold answers in dev.json; coverage@k = share of those words that occur in the text "
-           "of the top-k passages. A second number removes words that already occur in the claim text (they are matched by any retrieved "
-           "passage that echoes the query). Crude: answers are abstractive, numbers and names count like other words. "
-           "Claims whose search failed count as 0 (they are included, see 'n').\n",
-           "| cond | k | n claims | coverage (all answer words) | coverage excluding claim words | claims with any passage |\n|---|---|---|---|---|---|"]
-    for cond in ("main", "lenient", "factcheck"):
-        rs = [r for r in results if r["cond"] == cond]
-        for k in top_ks:
-            a_all, a_new, anyp = [], [], 0
-            for r in rs:
-                rw = raw[r["claim_id"]]
-                words = set()
-                for q in rw.get("questions") or []:
-                    for a in q.get("answers") or []:
-                        words |= content_words(a.get("answer") or "") | content_words(a.get("boolean_explanation") or "")
-                if not words:
-                    continue
-                new = words - content_words(rw["claim"])
-                txt = set()
-                for h in r["hits"][:k]:
-                    txt |= content_words(h["text"])
-                anyp += bool(r["hits"])
-                a_all.append(len(words & txt) / len(words))
-                a_new.append(len(new & txt) / len(new) if new else 0.0)
-            m = lambda x: f"{sum(x) / len(x):.2f}" if x else "-"
-            out.append(f"| {cond} | {k} | {len(a_all)} | {m(a_all)} | {m(a_new)} | {anyp} |")
-    return "\n".join(out)
-
-
 def main(argv=None):
     d, cache = (argv or sys.argv[1:])[:2]
     results = json.load(open(os.path.join(d, "results.json")))["results"]
     claims = load_smoke_claims()
     rows = search_timeline(os.path.join(cache, "netlog.jsonl"))
     txt = "# Diagnosis of the web smoke run (cached data; 4 extra probe calls to the engine)\n\n" + "\n\n".join(
-        [failure_section(rows), gold_funnel(results, claims), coverage(results, claims)])
+        [failure_section(rows), gold_funnel(results, claims)])
     open(os.path.join(d, "diagnosis.md"), "w", encoding="utf-8").write(txt)
     print(txt)
 

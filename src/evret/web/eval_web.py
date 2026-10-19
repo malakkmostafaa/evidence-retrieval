@@ -89,7 +89,28 @@ def score_claim(claim: dict, tool, cond: str) -> dict:
                       "flags": h.flags, "text": h.text} for h in hits]}
 
 
-def build_tool(cache_dir: str, replay: bool, corpus: str = CORPUS):
+def lock_provider(cache_dir: str, provider_id: str):
+    """A cache directory belongs to ONE provider/backend: mixing providers inside one experiment is not allowed."""
+    os.makedirs(cache_dir, exist_ok=True)
+    path = os.path.join(cache_dir, "provider.json")
+    if os.path.exists(path):
+        have = json.load(open(path))["provider"]
+        if have != provider_id:
+            raise RuntimeError(f"cache {cache_dir} was recorded with {have}; never mix providers within one experiment (asked for {provider_id})")
+    else:
+        json.dump({"provider": provider_id}, open(path, "w"))
+
+
+def make_provider(name: str):
+    from evret.web.providers import DdgsProvider, SerperProvider
+    if name == "serper":
+        return SerperProvider()
+    if name == "ddgs":
+        return DdgsProvider("duckduckgo")
+    raise ValueError(name)
+
+
+def build_tool(cache_dir: str, replay: bool, corpus: str = CORPUS, provider: str = "ddgs"):
     from evret import bm25 as bm
     from evret.chunk import make_counter, tokenizer_file
     from evret.embed import Encoder
@@ -105,7 +126,9 @@ def build_tool(cache_dir: str, replay: bool, corpus: str = CORPUS):
     netlog = NetLog(os.path.join(cache_dir, "netlog.jsonl"))
     cache = PageCache(cache_dir)
     fetcher = Fetcher(cache, mode, netlog=netlog, workers=4)
-    search = CachedSearch(DdgsProvider("duckduckgo"), SearchCache(os.path.join(cache_dir, "search.sqlite")), mode=mode, netlog=netlog)
+    prov = make_provider(provider)
+    lock_provider(cache_dir, f"{prov.name}/{prov.backend}")
+    search = CachedSearch(prov, SearchCache(os.path.join(cache_dir, "search.sqlite")), mode=mode, netlog=netlog)
     stats_path = os.path.join(cache_dir, "pool_stats.json")
     if os.path.exists(stats_path):
         stats = PoolStats.from_frozen(json.load(open(stats_path)))
@@ -114,7 +137,7 @@ def build_tool(cache_dir: str, replay: bool, corpus: str = CORPUS):
         stats = PoolStats.from_index(bm.BM25Index(sorted(glob.glob(os.path.join(corpus, "bm25", "band=*")))))
     enc = Encoder("cpu", "fp32")
     tool = WebSearchTool(search, fetcher, Wayback(fetcher), enc, make_counter(tokenizer_file()), stats)
-    return tool, netlog
+    return tool, netlog, prov
 
 
 def main(argv=None):
@@ -122,13 +145,15 @@ def main(argv=None):
     ap.add_argument("--out", default="outputs/web_smoke")
     ap.add_argument("--cache", default="outputs/web_cache")
     ap.add_argument("--replay", action="store_true")
+    ap.add_argument("--provider", choices=["serper", "ddgs"], required=True, help="serper = evaluation runs; ddgs = development only")
     ap.add_argument("--conds", default="main,lenient,factcheck")
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--resume", action="store_true", help="keep results already in results.json (their timings stay cold)")
     a = ap.parse_args(argv)
     os.makedirs(a.out, exist_ok=True)
     claims = load_smoke_claims()[: a.limit]
-    tool, netlog = build_tool(a.cache, a.replay)
+    tool, netlog, prov = build_tool(a.cache, a.replay, provider=a.provider)
+    q0 = prov.budget.used() if hasattr(prov, "budget") else None
     path = os.path.join(a.out, "results_replay.json" if a.replay else "results.json")
     results = json.load(open(path))["results"] if a.resume and os.path.exists(path) else []
     if a.resume:                                   # a failed search is redone; successful claims keep their (cold) timings
@@ -145,7 +170,10 @@ def main(argv=None):
             json.dump({"results": results, "stats": tool.stats.freeze()}, open(path, "w"), indent=1)
     json.dump(tool.stats.freeze(), open(os.path.join(a.cache, "pool_stats.json"), "w"))
     manifest = {"manifest_hash": tool.manifest_hash(), "n_network_calls": Counter(r["kind"] for r in netlog.records),
-                "mode": "replay" if a.replay else "live"}
+                "mode": "replay" if a.replay else "live", "provider": f"{prov.name}/{prov.backend}/{prov.version}"}
+    if q0 is not None:
+        manifest.update(live_queries_this_invocation=prov.budget.used() - q0, live_queries_total_on_this_machine=prov.budget.used(),
+                        last_credits_reported=getattr(prov, "last_credits", None))
     json.dump(manifest, open(os.path.join(a.out, "manifest_replay.json" if a.replay else "manifest.json"), "w"), indent=1)
     print(manifest)
 

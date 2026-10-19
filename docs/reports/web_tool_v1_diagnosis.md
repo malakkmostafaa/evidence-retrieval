@@ -122,19 +122,7 @@ Gold URL properties: 15 of 41 are Wayback wrappers; the gold *host* appears amon
 
 ## 3. Answer-content coverage proxy
 
-**Not found in the earlier experiments** (the notebooks 05 only have gold-*source* hit@N, which is the funnel above). Defined here as a new, simple proxy and labelled as such: for each claim, the set of content words (lower-cased alphanumerics of length >= 3, scikit-learn English stop-word list) of all gold answers in dev.json; coverage@k = share of those words that occur in the text of the top-k passages. A second number removes words that already occur in the claim text (they are matched by any retrieved passage that echoes the query). Crude: answers are abstractive, numbers and names count like other words. Claims whose search failed count as 0 (they are included, see 'n').
-
-| cond | k | n claims | coverage (all answer words) | coverage excluding claim words | claims with any passage |
-|---|---|---|---|---|---|
-| main | 5 | 15 | 0.20 | 0.15 | 9 |
-| main | 10 | 15 | 0.24 | 0.19 | 9 |
-| main | 50 | 15 | 0.26 | 0.22 | 9 |
-| lenient | 5 | 15 | 0.20 | 0.15 | 9 |
-| lenient | 10 | 15 | 0.24 | 0.19 | 9 |
-| lenient | 50 | 15 | 0.26 | 0.22 | 9 |
-| factcheck | 5 | 15 | 0.26 | 0.20 | 9 |
-| factcheck | 10 | 15 | 0.30 | 0.25 | 9 |
-| factcheck | 50 | 15 | 0.33 | 0.28 | 9 |
+Removed: my own definition was withdrawn on request. It will be added with the original metric code once the main session's port is merged.
 
 ## 4. Provider decision (WQ5 revised) - nothing is switched until you approve
 

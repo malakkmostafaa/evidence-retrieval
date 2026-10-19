@@ -138,3 +138,10 @@ Current: claim text unchanged. Alternatives: strip quotation marks, truncate to 
 
 ### WQ9: Held-out claims used
 Ranks 180-189 were used and inspected (as asked). From now on treat them as seen for the web tool.
+
+---
+## WD1c: Serper is the provider for evaluation runs   [evaluation]   approved by Malak 2026-10-19
+- Decision: `SerperProvider` (POST https://google.serper.dev/search, key from env var `SERPER_API_KEY`, body {q, gl=us, hl=en, num=10, autocorrect=false}; backend recorded as "google", version "serper-search-v1"). ddgs stays for development and unit tests only. A cache directory is locked to one provider (`provider.json`); mixing providers within one experiment raises an error. `autocorrect=false` so the engine does not rewrite the claim text silently (the API default is on).
+- Query budget (system): persisted counter in `~/.evret/query_budget.json` (override dir with EVRET_BUDGET_DIR), shared by all worktrees; counts every request SENT; warning at 1,500, refusal at 2,300 unless `EVRET_BUDGET_OVERRIDE=1`; the search cache means re-runs and REPLAY cost 0 queries; a 4xx answer (bad key, no credit) is not retried; an empty `organic` list is a genuine result (cached, not retried).
+- Terms checked 2026-10-19 (serper.dev homepage and /terms): "Get 2,500 free queries", "No credit card required". The terms say nothing about caching/retaining results, academic use, free-credit expiry or rate limits; they forbid mirroring the materials as-is without added value, misrepresenting the source, removing proprietary notices, and circumventing key limits. /pricing returned 404, so **credit expiry and rate limit remain unverified** (third parties say paid credits expire after 6 months). Consequences: the raw cache (`outputs/web_cache*`) is git-ignored and not redistributed; only derived statistics and short passage excerpts appear in reports; the thesis should name Serper/Google as the source; use the free credits soon after account creation.
+- Limitation: external commercial service; queries are sent to a third party; results are Google's ranking of 2026, not the 2020 index AVeriTeC's annotators used.
