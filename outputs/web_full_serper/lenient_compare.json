@@ -1,0 +1,193 @@
+{
+ "consistency": {
+  "claims": 180,
+  "inconsistent_claims": [],
+  "claims_without_added_pages_identical": 147,
+  "claims_with_date_unknown_main": 33,
+  "of_those_top50_changed": 26
+ },
+ "added_funnel": {
+  "date_unknown_in_main": 38,
+  "still_removed_tiny_or_no_text": 11,
+  "kept_in_lenient": 27,
+  "chunked": 27,
+  "with_passage_in_top50": 27,
+  "claims_with_added_page": 33,
+  "claims_with_added_page_in_top50": 26,
+  "top50_passages_total_lenient": 4093,
+  "top50_passages_from_added": 545,
+  "added_pages_gold": 0,
+  "added_pages_in_top5_claims": 23
+ },
+ "paired": {
+  "n_claims_all": 91,
+  "n_claims_kept_main": 75,
+  "n_claims_kept_lenient": 78,
+  "variants": {
+   "primary_all_claims": {
+    "cov_novel": {
+     "n": 88,
+     "main": [
+      0.27342172172023627,
+      [
+       0.21677203150912996,
+       0.3329057264783405
+      ],
+      88
+     ],
+     "lenient": [
+      0.28859421287339615,
+      [
+       0.23161019132435345,
+       0.34939422312474094
+      ],
+      88
+     ],
+     "claims_with_nonzero_diff": 9,
+     "lenient_minus_main": {
+      "n_claims": 88,
+      "mean_diff": 0.015172491153159877,
+      "sd_diff": 0.11579974099993416,
+      "ci95.0": [
+       -0.005109593060336084,
+       0.041678951415418705
+      ],
+      "ci98.33": [
+       -0.008149558979897739,
+       0.04906513937732634
+      ],
+      "wins": 5,
+      "ties": 79,
+      "losses": 4
+     }
+    },
+    "cov_union": {
+     "n": 91,
+     "main": [
+      0.33442602352711376,
+      [
+       0.2751199454540877,
+       0.3953781451937825
+      ],
+      91
+     ],
+     "lenient": [
+      0.35116889556083714,
+      [
+       0.2920502796090232,
+       0.4125705751491971
+      ],
+      91
+     ],
+     "claims_with_nonzero_diff": 9,
+     "lenient_minus_main": {
+      "n_claims": 91,
+      "mean_diff": 0.0167428720337234,
+      "sd_diff": 0.11610354775426428,
+      "ci95.0": [
+       -0.0038837635193906535,
+       0.04267444209628489
+      ],
+      "ci98.33": [
+       -0.00639138176771752,
+       0.05029006425498624
+      ],
+      "wins": 5,
+      "ties": 82,
+      "losses": 4
+     }
+    }
+   },
+   "secondary_claims_with_kept_page_in_lenient": {
+    "cov_novel": {
+     "n": 75,
+     "main": [
+      0.3208148201517439,
+      [
+       0.26135112044343395,
+       0.38268725863194825
+      ],
+      75
+     ],
+     "lenient": [
+      0.3386172097714515,
+      [
+       0.27949008936638015,
+       0.4018973807927814
+      ],
+      75
+     ],
+     "claims_with_nonzero_diff": 9,
+     "lenient_minus_main": {
+      "n_claims": 75,
+      "mean_diff": 0.01780238961970759,
+      "sd_diff": 0.1253709132380511,
+      "ci95.0": [
+       -0.005929110105580693,
+       0.04951869408238798
+      ],
+      "ci98.33": [
+       -0.009132763070823374,
+       0.057665504984771354
+      ],
+      "wins": 5,
+      "ties": 66,
+      "losses": 4
+     }
+    },
+    "cov_union": {
+     "n": 78,
+     "main": [
+      0.39016369411496604,
+      [
+       0.32987312724469237,
+       0.4514874098485335
+      ],
+      78
+     ],
+     "lenient": [
+      0.40969704482097663,
+      [
+       0.34975378397139206,
+       0.4714928795986062
+      ],
+      78
+     ],
+     "claims_with_nonzero_diff": 9,
+     "lenient_minus_main": {
+      "n_claims": 78,
+      "mean_diff": 0.019533350706010633,
+      "sd_diff": 0.12530230794689462,
+      "ci95.0": [
+       -0.004474205788751662,
+       0.05035383991338529
+      ],
+      "ci98.33": [
+       -0.008400035407466973,
+       0.058931138080768025
+      ],
+      "wins": 5,
+      "ties": 69,
+      "losses": 4
+     }
+    }
+   }
+  }
+ },
+ "gold": {
+  "main": {
+   "claims_gold_in_top50": 11,
+   "claims_gold_in_top10": 10,
+   "claims_gold_in_kept": 11,
+   "claims_with_kept_page": 144,
+   "kept_pages": 416
+  },
+  "lenient": {
+   "claims_gold_in_top50": 11,
+   "claims_gold_in_top10": 10,
+   "claims_gold_in_kept": 11,
+   "claims_with_kept_page": 150,
+   "kept_pages": 443
+  }
+ }
+}

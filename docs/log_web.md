@@ -40,3 +40,8 @@
 - Tried: quotation-mark fallback, pool-only claim list (ranks 0-179), main condition with Serper on 3 CPU threads, replay check.
 - Happened: 180/180 claims searched (148 new queries, 191 total used), 2 fallbacks, 24% of URLs kept, 11 claims with a gold page in the top-50, 31.6 s per claim. Failed attempt: replay raised KeyError because the frozen df were written only at the end of a run and the stopped run had not written them -> now frozen up front and after every claim; replay then identical.
 - Next: wait for approval for lenient / fact-check conditions.
+
+## 2026-10-20 (coverage vs corpus, lenient)
+- Tried: metrics_cov (merged by Malak) on the web top-50, corpus re-run on CPU for per-claim values, paired bootstrap; lenient pre-registered, replayed from cache, compared paired against main.
+- Happened: corpus numbers reproduce the corpus report (to 0.001); web CovNovel@512 0.273 vs corpus dense 0.403 / hybrid 0.376 (paired -0.13 / -0.10, CIs exclude 0), vs BM25 -0.04 (CI includes 0); lenient +0.015 to +0.020, CIs include 0, 9 of 88-91 claims change, 17 of 27 added pages mention years after 2020. 0 queries, 0 network calls (counter 191). Failed attempt: none in the runs; the per-claim corpus values had to be recomputed because only means were stored.
+- Next: fact-check condition (leakage diagnostic) only after approval.
