@@ -30,3 +30,8 @@
 - Tried: read the failures from the cache (netlog, failures table), 4 probe calls to the engine, per-claim gold funnel, content-word coverage proxy, provider options.
 - Happened: failures = DuckDuckGo anomaly page (HTTP 202) hidden by ddgs as No results found; clusters after ~7 queries and lasts minutes; gold funnel: 41 gold URLs, 2 returned, those 2 reach the top-10; coverage proxy (new, the earlier experiments had none) 0.20 / 0.24 / 0.26 at k = 5 / 10 / 50 in main. No provider switched. See docs/reports/web_tool_v1_diagnosis.md.
 - Next: Malak chooses the provider (WQ5).
+
+## 2026-10-19 (Serper)
+- Tried: SerperProvider (env key, persisted query budget 1500/2300, 4xx not retried, empty answer cached, autocorrect off), provider lock per cache directory; live smoke run on the same 15 claims; replay.
+- Happened: 15 live queries (15 of 2,500 used); replay = identical, 0 queries; 1 distinct gold page returned (claim 418) and it reaches the top-5; kept 31% of URLs; 29 s per claim; 3 claims with quotation marks gave 0-4 results. Removed my own coverage proxy from the diagnosis on request (to be re-added with the ported original). Failed attempts: none in the run; mutation check found one unguarded line (num > 10) and a test was added.
+- Next: Malak decides WQ8 (quotation marks); then 300-claim run (300 queries).

@@ -35,10 +35,13 @@ def search_timeline(netlog_path: str):
     return rows
 
 
-def failure_section(rows) -> str:
+def failure_section(rows, provider: str = "ddgs/duckduckgo") -> str:
     out = ["## 1. Search failures\n"]
     st = Counter(r["status"] for r in rows)
     out.append(f"{len(rows)} search attempts logged: " + ", ".join(f"{k}: {v}" for k, v in st.most_common()) + ".\n")
+    if not provider.startswith("ddgs"):
+        out.append(f"Provider {provider}: official API, no bot challenge; every attempt is one billed request. Per-query timeline omitted.")
+        return "\n".join(out)
     out.append("**Cause (diagnosed live with 4 probe calls, see text below):** the netlog only keeps the exception class. `ddgs` turns every "
                "non-200 answer of the engine into `None` and, when no engine raised, into `DDGSException('No results found.')`. A direct "
                "request to `html.duckduckgo.com/html/` returned **HTTP 202 with DuckDuckGo's anomaly (bot-challenge) page** for the claim "
@@ -118,7 +121,7 @@ def gold_funnel(results, claims) -> str:
         dom_hit += sum(1 for u in c["gold_urls"] if host(unwrap(u)) in rh)
     out.append(f"\nGold URL properties: {wrapped} of {n_all} are Wayback wrappers; the gold *host* appears among the engine results for "
                f"{dom_hit} of {n_all} gold URLs (exact URL: {tot['returned']}). Dead links / redirects of the gold URLs cannot be judged from the "
-               "cache (they were never requested, only the 2 returned ones were: both fetched OK). Checking all gold URLs would need "
+               "cache (they were never requested, only the gold URLs the engine returned were). Checking all gold URLs would need "
                f"{n_all} CDX lookups + {n_all} fetches (about 5 minutes); not run, waiting for approval.")
     return "\n".join(out)
 
@@ -129,7 +132,7 @@ def main(argv=None):
     claims = load_smoke_claims()
     rows = search_timeline(os.path.join(cache, "netlog.jsonl"))
     txt = "# Diagnosis of the web smoke run (cached data; 4 extra probe calls to the engine)\n\n" + "\n\n".join(
-        [failure_section(rows), gold_funnel(results, claims)])
+        [failure_section(rows, json.load(open(os.path.join(cache, "provider.json")))["provider"] if os.path.exists(os.path.join(cache, "provider.json")) else "ddgs/duckduckgo"), gold_funnel(results, claims)])
     open(os.path.join(d, "diagnosis.md"), "w", encoding="utf-8").write(txt)
     print(txt)
 

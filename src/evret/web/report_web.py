@@ -66,11 +66,11 @@ def summary(results):
     fate = Counter(v for r in by.get("main", []) for v in r["gold"]["gold_fate"].values())
     n_gold = sum(r["n_gold"] for r in by.get("main", []))
     out.append(f"{n_gold} gold URLs in total; returned by the engine: {sum(fate.values())}; fate: " + (", ".join(f"{k}: {v}" for k, v in fate.most_common()) or "-"))
-    out.append("\n## Search outcome (queries; engine = ddgs/duckduckgo)\n")
+    out.append("\n## Search outcome (queries)\n")
     for c in conds:
         ok = [r for r in by[c] if r["counts"]["returned"] > 0]
-        out.append(f"- {c}: {len(ok)} of {len(by[c])} claim queries returned results; {len(by[c]) - len(ok)} failed "
-                   f"(error or empty answer after 4 attempts): claims " + ", ".join(str(r["claim_id"]) for r in by[c] if r["counts"]["returned"] == 0))
+        out.append(f"- {c}: {len(ok)} of {len(by[c])} claim queries returned results; {len(by[c]) - len(ok)} returned no results (failed or empty answer): claims "
+                   f"" + ", ".join(str(r["claim_id"]) for r in by[c] if r["counts"]["returned"] == 0))
     out.append("\n## Seconds per claim (main condition; cold = the claim's pages were not cached yet, i.e. Wayback time > 0.5 s)\n")
     rs = [r for r in by.get("main", []) if r["seconds"]["wayback"] > 0.5]
     if rs:
