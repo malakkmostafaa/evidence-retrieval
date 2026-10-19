@@ -165,3 +165,34 @@ class BM25Index:
             norm = self.k1 * (1.0 - self.b + self.b * np.asarray(dl[ids], dtype=np.float32) / self.avgdl)
             scores[ids] += (idf[h] * tf * (self.k1 + 1.0) / (tf + norm)).astype(np.float32)
         return scores
+
+
+# ------------------------------------------------------------------------------------------ building from chunks
+def _file_postings(task: dict):
+    import pyarrow.parquet as pq
+    from evret.ingest import decode_text
+    pf = pq.ParquetFile(task["path"])
+    cache: dict = {}
+    parts, base = [], task["first_chunk_id"]
+    for g in range(pf.num_row_groups):
+        texts = [decode_text(x) for x in pf.read_row_group(g, columns=["text_utf8"]).column(0).to_pylist()]
+        parts.append(postings_from_texts(texts, base, cache))
+        base += len(texts)
+    if not parts:
+        return postings_from_texts([], base)
+    return (np.concatenate([p[0] for p in parts]), np.concatenate([p[1] for p in parts]),
+            np.concatenate([p[2] for p in parts]), np.concatenate([p[3] for p in parts]))
+
+
+def build_from_corpus(corpus: str, band: int, workers: int = 3, verbose: bool = True) -> dict:
+    import multiprocessing as mp
+    from evret.embed import band_of_file
+    man = json.load(open(os.path.join(corpus, "chunks_manifest.json"), encoding="utf-8"))
+    files = [e for e in man["files"] if band_of_file(e["file"]) == band]
+    tasks = [{"path": os.path.join(corpus, e["file"]), "first_chunk_id": e["first_chunk_id"]} for e in files]
+    out = os.path.join(corpus, "bm25", f"band={band}")
+    first = files[0]["first_chunk_id"]
+    if workers <= 1:
+        return build_band(out, first, (_file_postings(t) for t in tasks))
+    with mp.get_context("spawn").Pool(workers) as pl:
+        return build_band(out, first, pl.imap(_file_postings, tasks))

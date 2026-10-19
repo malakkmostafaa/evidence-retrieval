@@ -1,0 +1,30 @@
+{
+ "counts": {
+  "0": {
+   "chunks": 1580741,
+   "chunks_pdf": 1142221,
+   "chunks_web": 438520,
+   "chunks_split": 162407,
+   "tokens_sum": 450731715,
+   "chars_sum": 1975802145,
+   "max_tokens": 500,
+   "max_chars": 4510,
+   "over_500_tokens": 0,
+   "over_5000_chars": 0,
+   "mean_tokens": 285.1,
+   "mean_chars": 1249.9
+  }
+ },
+ "checks": {
+  "0": {
+   "docs_checked": 300,
+   "chunks_checked": 295534,
+   "span_errors": 0,
+   "hash_errors": 0,
+   "coverage_errors": 0,
+   "token_recount_checked": 2000,
+   "token_recount_mismatch": 0,
+   "docs_without_chunks_but_nonempty_nontiny": 0
+  }
+ }
+}

@@ -151,10 +151,12 @@ def manifest_path(corpus: str) -> str:
     return os.path.join(corpus, "embed_manifest.json")
 
 
-def chunk_table_sha(man: dict) -> str:
+def chunk_table_sha(man: dict, band: int) -> str:
+    """Fingerprint of the chunk files of ONE band (later bands may be added without invalidating earlier ones)."""
     h = hashlib.sha256()
     for e in man["files"]:
-        h.update(e["sha256"].encode())
+        if band_of_file(e["file"]) == band:
+            h.update((e["sha256"] + str(e["first_chunk_id"])).encode())
     return h.hexdigest()
 
 
@@ -167,13 +169,13 @@ def embed_band(corpus: str, band: int, enc: Encoder, budget: int = 24_000, log=p
         "normalized": True, "max_length": MAX_LEN, "shard_rows": SHARD_ROWS, "bands": {}}
     if (emb["model"], emb["revision"]) != (MODEL_ID, MODEL_REVISION):
         raise RuntimeError("embed manifest was made with a different model/revision")
-    if str(band) in emb["bands"] and emb["bands"][str(band)].get("chunk_table_sha") != chunk_table_sha(man) and \
+    if str(band) in emb["bands"] and emb["bands"][str(band)].get("chunk_table_sha") != chunk_table_sha(man, band) and \
             emb["bands"][str(band)].get("complete"):
         raise RuntimeError(f"band {band} was embedded from a different chunk table")
     bdir = os.path.join(corpus, "vectors", f"band={band}")
     os.makedirs(bdir, exist_ok=True)
     shards = emb["bands"].setdefault(str(band), {"first_chunk_id": lo, "rows": hi - lo, "shards": [], "complete": False,
-                                                 "chunk_table_sha": chunk_table_sha(man)})
+                                                 "chunk_table_sha": chunk_table_sha(man, band)})
     done = {s["file"] for s in shards["shards"]}
     t0, n_done = time.time(), 0
     for k, a in enumerate(range(lo, hi, SHARD_ROWS)):

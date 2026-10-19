@@ -288,8 +288,10 @@ def write_chunk_manifest(corpus: str) -> dict:
     man = {"n_chunks": off, "files": entries, "model_revision": MODEL_REVISION,
            "params": {"target": TARGET, "max_words": MAX_WORDS, "overlap": OVERLAP, "max_tokens": MAX_TOKENS,
                       "max_chars": MAX_CHARS}}
-    with open(os.path.join(corpus, "chunks_manifest.json"), "w", encoding="utf-8") as f:
+    tmp = os.path.join(corpus, "chunks_manifest.json.tmp")
+    with open(tmp, "w", encoding="utf-8") as f:
         json.dump(man, f, indent=1)
+    os.replace(tmp, os.path.join(corpus, "chunks_manifest.json"))
     return man
 
 

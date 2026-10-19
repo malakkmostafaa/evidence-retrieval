@@ -11,3 +11,8 @@ Three lines per session: tried / happened / next. Failed attempts belong here.
 - Tried: S0 plan; S1 ingest (pass 1 on 4 spawn workers, pass 2 only for the 180 pool stores); fixture tests + mutation checks; verification against the audit.
 - Happened: ingest 359 s; 215,226 documents = audit exactly; 200/200 sampled documents byte-identical. Failed attempts: (1) first chunker regex `(?:\S+\s*){180}` backtracked catastrophically on short texts and hung the test run (fixed with possessive quantifiers, Python >= 3.11); (2) a split-at-whitespace mutation survived the first version of the chunk test (added a "no word is cut" assertion); (3) old split file not found.
 - Next: chunk band 0 (running), embed benchmark, BM25 build, search tool.
+
+## 2026-10-19 (corpus tool, S2-S4)
+- Tried: chunker (regex-based generator), band 0 chunking, embed benchmark, BM25, search tool and tests.
+- Happened: band 0 = 1.58M chunks in 557 s (stragglers: one 134M-character store ran alone at the end); embed speed 300 chunks/s (GPU throttled to 652 MHz). Failed attempts: first chunker tests hung (regex backtracking, see above); two stale pytest processes kept burning CPU until killed. Embedding of band 0 and chunking of bands 1-5 run in the background.
+- Next: BM25 for band 0, S5 evaluation on band-0 claims, then bands 1-5 as they finish.
