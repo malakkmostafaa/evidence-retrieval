@@ -14,7 +14,7 @@ except UnicodeDecodeError:
     txt = raw.decode("cp1252", errors="replace")
 labels = {r["row"]: r["relevance_0_1_2"] for r in csv.DictReader(io.StringIO(txt, newline=""))}
 # passages and claims come from the ORIGINAL sheet (git, the version written by make_relabel_sheet.py), not from the re-saved file
-orig = subprocess.run(["git", "show", "HEAD:outputs/corpus_v1/relabel/relabel_sheet_TO_LABEL.csv"], capture_output=True).stdout.decode("utf-8-sig")
+orig = subprocess.run(["git", "show", "0502d9b:outputs/corpus_v1/relabel/relabel_sheet_TO_LABEL.csv"], capture_output=True).stdout.decode("utf-8-sig")
 rows = list(csv.DictReader(io.StringIO(orig, newline="")))
 for r in rows:
     r["relevance_0_1_2"] = labels[r["row"]]
