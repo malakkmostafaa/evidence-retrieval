@@ -205,3 +205,21 @@ def test_exclusion_of_a_document_stored_under_a_wrapper_by_its_original_url(worl
     f = sr.Filters(exclude_norm_urls=frozenset({"wrapped.example/w"}))        # the original URL, as dev.json may name it
     for r in ("dense", "bm25", "hybrid"):
         assert wrapped_url not in urls(world[r].search("omega kappa", 7, f)), r
+
+
+def test_exclude_doc_ids_removes_documents_for_every_retriever(world):
+    c = world["corpus"]
+    p5 = next(d for d, u in zip(c.docs["doc_id"], c.docs["url"]) if u == "https://undated.example/u")
+    f = sr.Filters(exclude_doc_ids=frozenset({p5}))
+    for r in ("dense", "bm25", "hybrid"):
+        u = urls(world[r].search("gamma eta", 7, f))
+        assert "https://undated.example/u" not in u and "https://other.example/u" in u, r
+
+
+def test_exact_bm25_statistics_option_runs_and_matches_when_nothing_is_removed(world):
+    exact = sr.BM25(world["corpus"], world["bm25"].index, exact_stats=True)
+    a = [(h.chunk_id, h.score) for h in exact.search("gamma eta", 5)]
+    b = [(h.chunk_id, h.score) for h in world["bm25"].search("gamma eta", 5)]
+    assert a == b
+    f = sr.Filters(exclude_doc_ids=frozenset({0}))
+    assert [h.chunk_id for h in exact.search("gamma eta", 5, f)] != [] 
