@@ -37,6 +37,7 @@ def provenance(root: str, claim_ids: list[int], pool_claims: set[int], n_pool_do
 
 
 def per_claim_metrics(claims, hits, reach_mask, anchored):
+    """metric -> array over the reachable claims (source metrics) or (claim ids, array) for the coverage metrics."""
     out = {}
     for name, key, k in METRICS_SRC:
         sel = 0 if key == "any" else 1
@@ -61,6 +62,7 @@ def main(argv=None):
     ap.add_argument("--out", required=True)
     a = ap.parse_args(argv)
     root = a.corpus
+    t_start, started = time.time(), time.strftime("%Y-%m-%d %H:%M:%S")
     ing = json.load(open(os.path.join(root, "manifest.json"), encoding="utf-8"))
     bands = list(range(ing["config"]["pool_bands"]))
     claims = ev.load_claims(a.dev, os.path.join(root, "ranks.json"), ing["config"]["band_size"], bands)
@@ -150,10 +152,60 @@ def main(argv=None):
                                          "max_abs_per_claim_diff": round(float(np.nanmax(np.abs(np.asarray(e) - np.asarray(f)))), 4)}
     res["checks"]["frozen_vs_recomputed_bm25_primary"] = cmp
     res["free_disk_gb"] = round(shutil.disk_usage(root).free / 1e9, 1)
+    # ---------------------------------------------------------------- per-claim export + regression check
+    reach_ids = [c["claim_id"] for c, r in zip(claims, reach) if r]
+    percl, problems = {}, []
+    old = json.load(open(os.path.join(a.out, "own_store_removal.json"), encoding="utf-8"))
+    for (label, rname), mets in store.items():
+        for metric, m in mets.items():
+            ids, vals = (m[0], m[1]) if isinstance(m, tuple) else (reach_ids, m)
+            vals = np.asarray(vals, float)
+            ok = ~np.isnan(vals)
+            percl.setdefault(label, {}).setdefault(rname, {})[metric] = {
+                "n": int(ok.sum()), "n_total": int(len(vals)),
+                "values": {str(i): (float(v) if not np.isnan(v) else None) for i, v in zip(ids, vals)}}
+            # aggregate to compare with: the value this run reported (paired table) and the value of the earlier run
+            agg_new = None
+            if label == "normal":
+                agg_new = res["paired_vs_normal"]["primary"][rname][metric]["normal"]
+            elif label in res["paired_vs_normal"]:
+                agg_new = res["paired_vs_normal"][label][rname][metric]["removed"]
+            if agg_new is not None and abs(float(np.nanmean(vals)) - agg_new) > 5e-5:
+                problems.append((label, rname, metric, "per-claim mean vs this run's aggregate", float(np.nanmean(vals)), agg_new))
+            if label in old["paired_vs_normal"] and label != "normal":
+                o = old["paired_vs_normal"][label][rname][metric]["removed"]
+                if abs(float(np.nanmean(vals)) - o) > 0.001:
+                    problems.append((label, rname, metric, "vs earlier run own_store_removal.json", float(np.nanmean(vals)), o))
+            if label == "normal":
+                o = old["paired_vs_normal"]["primary"][rname][metric]["normal"]
+                if abs(float(np.nanmean(vals)) - o) > 0.001:
+                    problems.append((label, rname, metric, "normal vs earlier run", float(np.nanmean(vals)), o))
+    res["regression_check"] = {"tolerance": 0.001, "n_compared": sum(len(m) for r in percl.values() for m in r.values()),
+                               "problems": problems}
+    if problems:
+        print("REGRESSION CHECK FAILED:", problems[:10], flush=True)
+        with open(os.path.join(a.out, "own_store_removal_rerun_FAILED.json"), "w", encoding="utf-8") as f:
+            json.dump(res, f, indent=1)
+        return 1
+    fz = json.load(open("docs/corpus_v1_freeze.json", encoding="utf-8"))
+    import subprocess
+    meta = {"git_commit": subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip(),
+            "src_clean": subprocess.run(["git", "status", "--porcelain", "--", "src", "scripts", "tests"],
+                                        capture_output=True, text=True).stdout.strip() == "",
+            "corpus_v1_freeze": {k: fz[k] for k in ("chunks_digest", "vectors_digest", "bm25_digest",
+                                                    "documents_shards_digest", "ranks_sha256")},
+            "started": started, "finished": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "run_seconds": round(time.time() - t_start), "bootstrap_seed": 7,
+            "claim_sets": {"evaluated": len(claims), "reachable": int(reach.sum())},
+            "rerun_of": "docs/reports/own_store_removal_prereg.md (no design change)"}
+    with open(os.path.join(a.out, "own_store_removal_per_claim.json"), "w", encoding="utf-8") as f:
+        json.dump({"meta": meta, "variants": percl}, f)
+    res["meta"] = meta
     os.makedirs(a.out, exist_ok=True)
-    with open(os.path.join(a.out, "own_store_removal.json"), "w", encoding="utf-8") as f:
+    with open(os.path.join(a.out, "own_store_removal_rerun.json"), "w", encoding="utf-8") as f:
         json.dump(res, f, indent=1)
     print("done")
+    return 0
 
 
 if __name__ == "__main__":
