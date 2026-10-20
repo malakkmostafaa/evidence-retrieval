@@ -60,8 +60,10 @@ out["environment"] = {
     "torch": torch.__version__, "cuda": torch.version.cuda, "transformers": transformers.__version__,
     "tokenizers": tokenizers.__version__, "pyarrow": pyarrow.__version__,
     "gpu": torch.cuda.get_device_name(0) if torch.cuda.is_available() else None,
-    "note": "passages embedded on the GPU in fp16 (stored float16); CPU vs GPU vectors differ by cosine ~0.001 (env_report: "
-            "min cosine 1.000000 on 5 texts, tests/test_embed: fp16 vs fp32 min cosine > 0.999), so the environment is part of the freeze"}
+    "note": "passages embedded on the GPU in fp16 and stored as float16; a fresh recomputation of 300 stored vectors differs "
+            "by cosine >= 0.99984 (median 1.000001, outputs/corpus_v1/embed_verify_0_1_2_3_4_5.json) and fp16 vs fp32 by "
+            "cosine > 0.999 (tests/test_embed.py), i.e. device/precision changes vectors at the 1e-3 level, so the "
+            "environment is part of the freeze"}
 # metric version and claim sets
 ing = json.load(open(f"{R}/manifest.json"))
 claims = ev.load_claims("C:/Users/malak/Desktop/thesis/data/raw/averitec/dev.json", f"{R}/ranks.json",
