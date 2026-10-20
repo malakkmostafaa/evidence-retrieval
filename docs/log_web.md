@@ -50,3 +50,8 @@
 - Tried: fact-check condition on the 180 pool claims (no queries; new page fetches), replay check, paired comparison against main.
 - Happened: 46 of 175 fact-check URLs kept (67 dated after, 59 blocked); CovNovel +0.024 [-0.002,+0.052], CovUnion +0.033 [+0.005,+0.065]; no gold gain; replay identical, counter unchanged (191). Found: 2 URLs differed for a non-planned reason (transient Wayback lookup errors in main). Corrected an earlier statement: the 10 gold entries lost as fact-check domains are 3 distinct pages.
 - Next: nothing pending; sealed claims not touched.
+
+## 2026-10-20 (oracle router)
+- Tried: pre-registered web vs own-store-removed corpus + oracle router; checked data availability first.
+- Happened: per-claim values for the own-store-removed corpus do not exist (aggregates only; one NaN mean), so that comparison is pending a per-claim file from the corpus session; oracle router computed for the normal corpus from existing per-claim values: gain over best single +0.04 to +0.08 (all claims), +0.045 to +0.09 (claims with a web page); 0 queries, no retrieval.
+- Next: corpus session saves per-claim arrays; then run oracle_router --label own_store_removed and the paired table.

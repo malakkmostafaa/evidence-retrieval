@@ -9,6 +9,7 @@ logs/
 
 # web tool: frozen caches (search results, page blobs, SQLite, net logs) are re-creatable snapshots, large, and third-party content
 outputs/web_cache*/
+outputs/web_cache_serper/
 *.sqlite
 outputs/**/netlog.jsonl
 
