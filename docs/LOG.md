@@ -34,3 +34,6 @@ Three lines per session: tried / happened / next. Failed attempts belong here.
 
 ## 2026-10-20 (own-store removal)
 - Tried: pre-registered and ran the own-store removal evaluation (primary/secondary, frozen-statistics check). Happened: all differences negative, CIs exclude 0; coverage keeps about 70% of its normal value; frozen BM25 statistics change aggregates by <= 0.007. Report: docs/reports/own_store_removal.md.
+
+## 2026-10-20 (own-store removal re-run with per-claim values)
+- Tried: re-ran the pre-registered removal evaluation unchanged, saving per-claim values (outputs/corpus_v1/own_store_removal_per_claim.json). Happened: 77 (variant, retriever, metric) series compared, 0 problems; every mean and paired difference and every CI bound is identical to the first run (difference 0.0); per-claim means differ from the stored 4-decimal aggregates by at most 4.8e-5 (rounding). Run time 1,259 s, commit 4698a6a (clean), freeze digests in the file's meta. CovNovel has n = 88 of 91 (3 nulls).
