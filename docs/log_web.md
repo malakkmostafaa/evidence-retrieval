@@ -40,3 +40,18 @@
 - Tried: quotation-mark fallback, pool-only claim list (ranks 0-179), main condition with Serper on 3 CPU threads, replay check.
 - Happened: 180/180 claims searched (148 new queries, 191 total used), 2 fallbacks, 24% of URLs kept, 11 claims with a gold page in the top-50, 31.6 s per claim. Failed attempt: replay raised KeyError because the frozen df were written only at the end of a run and the stopped run had not written them -> now frozen up front and after every claim; replay then identical.
 - Next: wait for approval for lenient / fact-check conditions.
+
+## 2026-10-20 (coverage vs corpus, lenient)
+- Tried: metrics_cov (merged by Malak) on the web top-50, corpus re-run on CPU for per-claim values, paired bootstrap; lenient pre-registered, replayed from cache, compared paired against main.
+- Happened: corpus numbers reproduce the corpus report (to 0.001); web CovNovel@512 0.273 vs corpus dense 0.403 / hybrid 0.376 (paired -0.13 / -0.10, CIs exclude 0), vs BM25 -0.04 (CI includes 0); lenient +0.015 to +0.020, CIs include 0, 9 of 88-91 claims change, 17 of 27 added pages mention years after 2020. 0 queries, 0 network calls (counter 191). Failed attempt: none in the runs; the per-claim corpus values had to be recomputed because only means were stored.
+- Next: fact-check condition (leakage diagnostic) only after approval.
+
+## 2026-10-20 (fact-check diagnostic)
+- Tried: fact-check condition on the 180 pool claims (no queries; new page fetches), replay check, paired comparison against main.
+- Happened: 46 of 175 fact-check URLs kept (67 dated after, 59 blocked); CovNovel +0.024 [-0.002,+0.052], CovUnion +0.033 [+0.005,+0.065]; no gold gain; replay identical, counter unchanged (191). Found: 2 URLs differed for a non-planned reason (transient Wayback lookup errors in main). Corrected an earlier statement: the 10 gold entries lost as fact-check domains are 3 distinct pages.
+- Next: nothing pending; sealed claims not touched.
+
+## 2026-10-20 (oracle router)
+- Tried: pre-registered web vs own-store-removed corpus + oracle router; checked data availability first.
+- Happened: per-claim values for the own-store-removed corpus do not exist (aggregates only; one NaN mean), so that comparison is pending a per-claim file from the corpus session; oracle router computed for the normal corpus from existing per-claim values: gain over best single +0.04 to +0.08 (all claims), +0.045 to +0.09 (claims with a web page); 0 queries, no retrieval.
+- Next: corpus session saves per-claim arrays; then run oracle_router --label own_store_removed and the paired table.
