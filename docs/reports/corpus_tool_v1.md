@@ -88,3 +88,17 @@ So "empty only" is 31%, "empty plus tiny" is 34%, "all reasons" is 39%. The fact
 **Limitations.** One rater (no agreement estimate); n = 50, so the AUC confidence interval will be wide (roughly +-0.15); claims are restricted to anchored answers (extractive bias); the passages are sampled from the top-5 of three retrievers, not from all passages; the sample is small for any per-arm statement.
 
 **File to label:** `outputs/corpus_v1/relabel/relabel_sheet_TO_LABEL.csv` (columns: row, claim, passage, relevance_0_1_2; UTF-8 with BOM, opens in Excel).
+
+## Relabelling results (labels returned 2026-10-20; scored with the rules fixed above)
+Handling note: the returned file had been re-saved by Excel in Windows-1252 encoding; only the label column was read from it. Claim and passage texts come from the original sheet (the file I generated, identical in row order and claim text for all 50 rows; 3 passages differ only by the re-encoding). The key was opened by the scoring script only after the labels were in.
+
+n = 50 passages (43 claims); label counts: 0 = 7, 1 = 20, 2 = 23. Overlap-score analyses use n = 50 (all answer words) and n = 49 (novel words; 1 passage has no answer with >= 3 novel tokens and is dropped, as pre-registered). 95% bootstrap CIs resample passages (10,000 draws).
+
+| score | AUC, label 2 vs {0,1} | Spearman with the 3-level label | AUC, label >= 1 vs 0 (secondary, only 7 zeros) |
+|---|---|---|---|
+| **novel words (primary), n = 49** | **0.685 [0.521, 0.839]** | 0.404 [0.129, 0.631] | 0.832 |
+| all answer words, n = 50 | 0.694 [0.537, 0.839] | 0.396 [0.144, 0.618] | 0.789 |
+
+Descriptive comparison with the old validation (AUC 0.75 novel / 0.80 all words; Spearman 0.44 / 0.52, n = 100, old pipeline): the new point estimates are lower (0.69 vs 0.75 and 0.69 vs 0.80), but the new intervals contain the old values, so with n = 50 and one rater this regression neither confirms nor contradicts them. The overlap score separates label 2 from the rest clearly better than chance (both lower CI bounds > 0.5) and tracks the 3-level label (Spearman about 0.4, lower bounds > 0.1). It is a noisy proxy of human relevance, consistent with its earlier use as a coarse measure.
+Label distribution by the arm that first drew the passage (descriptive, n per arm 17 / 17 / 16, not used to rank retrievers): dense 1/6/10, BM25 3/5/9, hybrid 3/9/4 (labels 0/1/2). Raw file: `outputs/corpus_v1/relabel/relabel_scores.json`.
+Limitations as stated before: one rater, n = 50, anchored-answer claims only, passages from the top-5 of three retrievers.

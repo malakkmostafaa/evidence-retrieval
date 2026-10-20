@@ -99,3 +99,7 @@ Format: Decision / Alternatives considered / Evidence / Reason / Limitations, re
   - new: no units. A chunk ends at the first word at or after word 200 that ends a sentence (. ! ? plus closing quote) or is followed by a newline, else at word 250; the next chunk starts exactly 20 words before the end; the cap splits by halving at the nearest whitespace.
 - Consequences: chunk boundaries, sizes and counts differ from experiments 04b/05, so retrieval numbers from the new tool are not comparable chunk-for-chunk with the earlier results; the 100 labelled passages come from the old chunkers; the 10% cap-split rate (D9) was measured only for the new chunker. The metric regression (D15) is independent of chunking because anchoring uses raw page text and the labelled passages are fixed text.
 - Limitation / revisit if: a chunker comparison (legacy pack_200_250 vs this one) is an obvious later experiment; it needs a re-embedding (about 85 min per 1.6M chunks).
+
+## D16: Relabelling on the new corpus (n = 50, one rater)   [evaluation]   2026-10-20
+- Result (design and rules pre-registered in docs/reports/corpus_tool_v1.md): AUC (label 2 vs rest) of the novel-word overlap score 0.685 [0.521, 0.839], n = 49; all-words 0.694 [0.537, 0.839], n = 50; Spearman 0.40 for both. Old validation: 0.75 / 0.80 (n = 100, old pipeline). The new intervals contain the old values; the metric is a noisy but better-than-chance proxy on this corpus.
+- Limitations: single rater, wide CI, partial validation only. Metrics module and thresholds unchanged.
