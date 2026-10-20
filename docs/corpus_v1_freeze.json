@@ -1,0 +1,27 @@
+{
+ "frozen": "2026-10-20",
+ "git_commit_at_freeze": "77f21020dbb3c594dd7002087521f9b63552d622",
+ "ingest_manifest_sha256": "d384dc74e409dde2a9d07f5d0a3449753f160de8ab1d705ec4aa5af0a396f36a",
+ "documents_shards_digest": "c40bc28b4e5e9fbd6914b0538518f5cef7c7d7ec15046a13a918878336eb5090",
+ "n_document_shards": 180,
+ "chunks_manifest_sha256": "3e8f1a37b71d9068c48406fbd1daf2a85f3bad5663c72fc095217e0117c466f3",
+ "chunks_digest": "40cdd66356a187aa146cdfc3ee2cecb0d8c07603d21417faea287c3cb4885524",
+ "n_chunks": 6415863,
+ "n_chunk_files": 180,
+ "embed_manifest_sha256": "c43c6261e5c06ea89b11bc8922e6d971adc9020f102a9a48947a2faf45861966",
+ "vectors_digest": "f013a60f684a8e39278de1320fbc869b01cff4142223df66fffc915386cd43ce",
+ "n_vector_shards": 130,
+ "bm25_digest": "793879bc99997be6904f9b115e0aafb4ffa5ee3b241d0e7f9835ddc0d2bdae22",
+ "n_bm25_files": 396,
+ "ranks_sha256": "5c9ab9557d6f1314295c20782976047646cc94773fc4544315e004fc801c0bc0",
+ "doc_index_pool_sha256": "5342c5d1382a191a21fc8f1a50f8fbe931fe69dfe817e39181be3cccd4d70635",
+ "model": "BAAI/bge-small-en-v1.5",
+ "model_revision": "5c38ec7c405ec4b44b94cc5a9bb96e735b38267a",
+ "chunk_params": {
+  "target": 200,
+  "max_words": 250,
+  "overlap": 20,
+  "max_tokens": 500,
+  "max_chars": 5000
+ }
+}
